@@ -146,7 +146,7 @@ export class UsuariosPageComponent implements OnInit {
       this.usuarioService.deleteUsuario(id).subscribe({
         next: () => {
           this.usuarios = this.usuarios.filter((u) => u.idUsuario !== id);
-          this.aplicarFiltro(); // actualiza la tabla
+          this.aplicarFiltro();
         },
         error: (err) => {
           console.error('Error al eliminar usuario:', err);
@@ -172,7 +172,6 @@ export class UsuariosPageComponent implements OnInit {
           );
           this.aplicarFiltro();
 
-          // Cierra el modal manualmente
           const modalElement = document.getElementById('confirmDeleteModal');
           if (modalElement) {
             const modalInstance = bootstrap.Modal.getInstance(modalElement);

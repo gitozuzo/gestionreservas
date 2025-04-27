@@ -3,7 +3,6 @@
     class="card p-4 shadow rounded-4 espacio-form-card w-100"
     style="max-width: 800px"
   >
-    <!-- Título -->
     <div class="text-center mb-4">
       <div class="d-flex justify-content-center align-items-center mb-2">
         <i
@@ -20,13 +19,11 @@
       <div class="title-underline mb-3"></div>
     </div>
 
-    <!-- Formulario -->
     <form
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
       enctype="multipart/form-data"
     >
-      <!-- Nombre -->
       <div class="mb-3">
         <label class="form-label">Nombre del espacio</label>
         <input
@@ -37,7 +34,6 @@
         />
       </div>
 
-      <!-- Capacidad y Tipo -->
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label">Capacidad</label>
@@ -62,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Ubicación -->
       <div class="mt-3">
         <label class="form-label">Ubicación</label>
         <input
@@ -73,7 +68,6 @@
         />
       </div>
 
-      <!-- Estado -->
       <div class="mt-3">
         <label class="form-label">Estado</label>
         <select class="form-select" formControlName="idEstado">
@@ -87,7 +81,6 @@
         </select>
       </div>
 
-      <!-- Equipamiento -->
       <div class="mt-3">
         <label class="form-label">Equipamiento</label>
         <div class="equipamiento-box p-3 rounded shadow-sm">
@@ -119,7 +112,6 @@
         </div>
       </div>
 
-      <!-- Descripción -->
       <div class="mt-3">
         <label class="form-label">Descripción</label>
         <textarea
@@ -129,7 +121,6 @@
         ></textarea>
       </div>
 
-      <!-- Imagen -->
       <div class="mt-3">
         <label class="form-label">Imagen</label>
         <input
@@ -146,7 +137,6 @@
         </div>
       </div>
 
-      <!-- Botones -->
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button
           type="button"

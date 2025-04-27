@@ -196,7 +196,6 @@ export class EspaciosPageComponent implements OnInit {
       modalInstance?.hide();
     }
 
-    // Limpieza de fondo difuminado (backdrop)
     const backdrop = document.querySelector('.modal-backdrop');
     if (backdrop) backdrop.remove();
 

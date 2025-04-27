@@ -5,7 +5,6 @@
     class="row w-100 shadow-lg rounded overflow-hidden"
     style="max-width: 960px"
   >
-    <!-- 📱 Imagen: solo visible en pantallas grandes -->
     <div class="col-md-6 d-none d-md-block bg-light p-0">
       <img
         src="assets/img/login.jpg"
@@ -15,7 +14,6 @@
       />
     </div>
 
-    <!-- 📝 Formulario -->
     <div class="col-12 col-md-6 bg-white p-4 p-md-5">
       <div class="text-center mb-3">
         <i class="bi bi-person-circle text-primary" style="font-size: 3rem"></i>
@@ -25,13 +23,11 @@
         Gestiona tus espacios de trabajo
       </p>
 
-      <!-- 🔴 Error Message -->
       <div *ngIf="errorMessage" class="alert alert-danger py-2 small">
         {{ errorMessage }}
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <!-- Email -->
         <div class="mb-3">
           <label for="email" class="form-label">Correo electrónico</label>
           <div class="input-group">
@@ -50,7 +46,6 @@
           </div>
         </div>
 
-        <!-- Password -->
         <div class="mb-3">
           <label for="password" class="form-label">Contraseña</label>
           <div class="input-group">
@@ -69,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Botón -->
         <button
           type="submit"
           class="btn btn-primary w-100"
@@ -79,7 +73,6 @@
         </button>
       </form>
 
-      <!-- Info adicional -->
       <p class="mt-4 small text-muted">
         Reserva salas de reuniones, espacios colaborativos y recursos
         empresariales de forma sencilla y eficiente.

@@ -8,22 +8,18 @@ const NAME_KEY = 'name';
 export class AuthStore {
   constructor() {}
 
-  // ✅ Verifica si hay token
   isAuthenticatedValue(): boolean {
     return !!localStorage.getItem(TOKEN_KEY);
   }
 
-  // ✅ Obtiene el rol actual
   getRoleValue(): string | null {
     return localStorage.getItem(ROLE_KEY);
   }
 
-  // ✅ Obtiene el nombre actual
   getNameValue(): string | null {
     return localStorage.getItem(NAME_KEY);
   }
 
-  // ✅ Guarda los datos del token
   login(token: string): void {
     try {
       const base64 = token.split('.')[1];
@@ -42,7 +38,6 @@ export class AuthStore {
     }
   }
 
-  // ✅ Limpia el estado y localStorage
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(ROLE_KEY);

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -16,7 +16,5 @@ export class DashboardPage implements OnInit {
     inactivos: 1,
   };
 
-  ngOnInit(): void {
-    // Aquí podrías llamar a un servicio real en el futuro
-  }
+  ngOnInit(): void {}
 }

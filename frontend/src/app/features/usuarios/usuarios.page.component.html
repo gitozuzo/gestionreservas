@@ -1,5 +1,4 @@
 <div class="container py-4">
-  <!-- Título -->
   <div
     class="mb-4 d-flex align-items-center gap-2 justify-content-center text-center"
   >
@@ -12,11 +11,9 @@
     </h2>
   </div>
 
-  <!-- Top Bar -->
   <div
     class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3 gap-2"
   >
-    <!-- Buscador + Filtros -->
     <div class="d-flex flex-grow-1 gap-2">
       <div class="input-group flex-grow-1" style="height: 42px">
         <span class="input-group-text bg-white">
@@ -31,7 +28,6 @@
         />
       </div>
 
-      <!-- Botón Filtros -->
       <button
         class="btn btn-outline-secondary d-flex align-items-center px-3"
         style="height: 42px"
@@ -43,7 +39,6 @@
       </button>
     </div>
 
-    <!-- Botón Nuevo usuario -->
     <button
       class="btn btn-primary px-3"
       style="height: 42px"
@@ -53,10 +48,8 @@
     </button>
   </div>
 
-  <!-- Panel de Filtros -->
   <div *ngIf="mostrarFiltros" class="card p-4 mb-3 shadow-sm">
     <div class="row g-3">
-      <!-- Correo -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary">Correo</label>
         <input
@@ -67,7 +60,6 @@
         />
       </div>
 
-      <!-- Rol -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary">Rol</label>
         <div class="d-flex gap-2 flex-wrap">
@@ -100,7 +92,6 @@
         </div>
       </div>
 
-      <!-- Estado -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary">Estado</label>
         <div class="d-flex gap-2 flex-wrap">
@@ -133,7 +124,6 @@
         </div>
       </div>
 
-      <!-- Fecha desde -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary"
           >Último acceso desde</label
@@ -145,7 +135,6 @@
         />
       </div>
 
-      <!-- Fecha hasta -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary"
           >Último acceso hasta</label
@@ -157,7 +146,6 @@
         />
       </div>
 
-      <!-- Botones -->
       <div class="col-12 d-flex justify-content-end gap-2 mt-3">
         <button class="btn btn-secondary" (click)="limpiarFiltros()">
           Limpiar
@@ -169,7 +157,6 @@
     </div>
   </div>
 
-  <!-- Tabla (solo escritorio) -->
   <div class="table-responsive d-none d-md-block shadow-sm rounded bg-white">
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
@@ -237,7 +224,6 @@
     </table>
   </div>
 
-  <!-- Tarjetas (solo móvil) -->
   <div class="d-block d-md-none">
     <div *ngFor="let usuario of usuariosPaginados" class="card mb-3 shadow-sm">
       <div class="card-body">
@@ -289,7 +275,6 @@
     </div>
   </div>
 
-  <!-- Paginación -->
   <div
     class="d-flex justify-content-between align-items-center mt-3 small text-muted flex-wrap gap-2"
   >
@@ -317,7 +302,6 @@
   </div>
 </div>
 
-<!-- Modal de Confirmación de Eliminación -->
 <div
   class="modal fade"
   id="confirmDeleteModal"

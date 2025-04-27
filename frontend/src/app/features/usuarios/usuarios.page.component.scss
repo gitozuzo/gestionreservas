@@ -1,16 +1,14 @@
-// Estado Activo (verde suave)
 .badge.bg-success {
-  background-color: #d1f4e2 !important; // verde claro
-  color: #1e824c !important; // texto verde oscuro
+  background-color: #d1f4e2 !important;
+  color: #1e824c !important;
   font-weight: 500;
   padding: 0.4rem 0.7rem;
   border-radius: 1rem;
 }
 
-// Estado Inactivo (rojo suave)
 .badge.bg-danger {
-  background-color: #fcdada !important; // rojo claro
-  color: #c0392b !important; // texto rojo más oscuro
+  background-color: #fcdada !important;
+  color: #c0392b !important;
   font-weight: 500;
   padding: 0.4rem 0.7rem;
   border-radius: 1rem;
