@@ -1,0 +1,115 @@
+<div class="container-fluid d-flex justify-content-center pt-3">
+  <div class="card p-4 shadow rounded-4" style="max-width: 520px; width: 100%">
+    <!-- Título -->
+    <div class="text-center mb-4">
+      <div class="d-flex align-items-center justify-content-center mb-2">
+        <!-- Icono según modo -->
+        <i
+          *ngIf="!isEditMode"
+          class="bi bi-person-fill-add text-primary fs-3 me-2"
+        ></i>
+
+        <i
+          *ngIf="isEditMode"
+          class="bi bi-pencil-square text-warning fs-3 me-2"
+        ></i>
+
+        <!-- Título -->
+        <h3 class="mb-0 fw-semibold text-dark">
+          {{ isEditMode ? "Editar usuario" : "Nuevo usuario" }}
+        </h3>
+      </div>
+      <div class="title-underline mb-4"></div>
+    </div>
+    <!-- Formulario -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-2">
+        <label class="form-label small">Nombre</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="nombre"
+        />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control form-control-sm"
+          formControlName="email"
+        />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small">Teléfono</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="telefono"
+        />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small">Dirección</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="direccion"
+        />
+      </div>
+
+      <!-- Rol y Estado en la misma fila -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="idRol" class="form-label">Rol</label>
+
+          <select id="idRol" class="form-select" formControlName="idRol">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let r of roles" [value]="r.idRol">
+              {{ r.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="idEstado" class="form-label">Estado</label>
+          <select id="idEstado" class="form-select" formControlName="idEstado">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let e of estadosUsuario" [value]="e.idEstado">
+              {{ e.descripcion }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small">Contraseña</label>
+        <input
+          type="password"
+          class="form-control form-control-sm"
+          formControlName="password"
+          [placeholder]="isEditMode ? 'Dejar vacío para no cambiar' : ''"
+        />
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-sm btn-primary"
+          [disabled]="form.invalid"
+        >
+          {{ isEditMode ? "Guardar cambios" : "Crear usuario" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
