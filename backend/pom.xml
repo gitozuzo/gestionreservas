@@ -57,6 +57,12 @@
 			<version>1.18.38</version>
 		</dependency>
 
+		<!-- Websocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
 
 		<!-- MySQL Driver -->
 		<dependency>

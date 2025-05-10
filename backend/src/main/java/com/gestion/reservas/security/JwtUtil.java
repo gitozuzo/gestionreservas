@@ -39,14 +39,25 @@ public class JwtUtil {
                 .getSubject();
     }
 
+    public Long extractIdUsuario(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("idUsuario", Long.class);
+    }
+
     public boolean validateToken(String token) {
         try {
+            System.out.println("[WebSocket] validateToken: " + token);
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
+            System.out.println("[WebSocket] validateToken error: " + e.getMessage());
             return false;
         }
     }

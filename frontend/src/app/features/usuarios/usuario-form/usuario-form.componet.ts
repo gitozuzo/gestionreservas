@@ -26,6 +26,7 @@ export class UsuarioFormComponent implements OnInit {
   isEditMode = false;
   roles: Rol[] = [];
   estadosUsuario: EstadoUsuario[] = [];
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -69,8 +70,8 @@ export class UsuarioFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       telefono: [''],
       direccion: [''],
-      idRol: [null, Validators.required],
-      idEstado: [null, Validators.required],
+      idRol: [this.isEditMode ? null : 2, Validators.required],
+      idEstado: [this.isEditMode ? null : 1, Validators.required],
       password: ['', this.isEditMode ? [] : [Validators.required]],
     });
   }
@@ -79,19 +80,31 @@ export class UsuarioFormComponent implements OnInit {
     if (this.form.invalid) return;
 
     const usuario: UsuarioRequestDTO = this.form.value;
-
-    console.log(usuario);
+    this.errorMessage = null;
 
     if (this.isEditMode) {
-      this.usuarioService
-        .updateUsuario(this.usuarioId!, usuario)
-        .subscribe(() => {
-          this.router.navigate(['/usuarios']);
-        });
+      this.usuarioService.updateUsuario(this.usuarioId!, usuario).subscribe({
+        next: () => this.router.navigate(['/usuarios']),
+        error: (err) => {
+          if (err.status === 409) {
+            this.errorMessage = err.error; // El backend devuelve el texto: "El correo electrónico ya está registrado."
+          } else {
+            this.errorMessage = 'Ocurrió un error al crear el usuario.';
+          }
+          console.error(err);
+        },
+      });
     } else {
-      console.log('crear usuario', usuario);
-      this.usuarioService.createUsuario(usuario).subscribe(() => {
-        this.router.navigate(['/usuarios']);
+      this.usuarioService.createUsuario(usuario).subscribe({
+        next: () => this.router.navigate(['/usuarios']),
+        error: (err) => {
+          if (err.status === 409) {
+            this.errorMessage = err.error; // El backend devuelve el texto: "El correo electrónico ya está registrado."
+          } else {
+            this.errorMessage = 'Ocurrió un error al crear el usuario.';
+          }
+          console.error(err);
+        },
       });
     }
   }

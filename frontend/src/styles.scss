@@ -20,3 +20,8 @@ body {
 .main-content {
   flex: 1;
 }
+
+.toast-success {
+  background-color: #cce5ff !important; /* azul clarito */
+  color: #004085 !important; /* azul oscuro para el texto */
+}

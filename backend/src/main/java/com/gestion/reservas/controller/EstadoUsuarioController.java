@@ -24,7 +24,7 @@ public class EstadoUsuarioController {
         return ResponseEntity.ok(estadoUsuarioService.findAll());
     }
 
-    // ✅ Obtener usuario por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<EstadoUsuario> getEstadoUsuarioById(@PathVariable Long id) {
         return estadoUsuarioService.findById(id)

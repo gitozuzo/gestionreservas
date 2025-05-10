@@ -33,14 +33,26 @@ public class JwtService {
     public String generateToken(Usuario usuario) {
 
         return Jwts.builder()
-                .setSubject(usuario.getNombre()) // nombre visible en el frontend
-                .claim("email", usuario.getEmail()) // opcional si ya está en "sub"
-                .claim("rol", usuario.getRol().getDescripcion()) // lo usarás para proteger rutas
+                .setSubject(usuario.getNombre())
+                .claim("idUsuario", usuario.getIdUsuario())
+                .claim("email", usuario.getEmail())
+                .claim("rol", usuario.getRol().getDescripcion())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public Long extractIdUsuario(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("idUsuario", Long.class);
+    }
+
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
@@ -51,9 +63,20 @@ public class JwtService {
                 .getSubject();
     }
 
+    public String extractEmail(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("email", String.class);
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final String useremail = extractEmail(token);
+
+        return useremail.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public boolean isTokenExpired(String token) {
@@ -64,5 +87,18 @@ public class JwtService {
                 .getBody()
                 .getExpiration();
         return expiration.before(new Date());
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            System.out.println("[WebSocket] validateToken error: " + e.getMessage());
+            return false;
+        }
     }
 }

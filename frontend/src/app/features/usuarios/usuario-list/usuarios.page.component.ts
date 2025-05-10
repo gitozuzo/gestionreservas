@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Usuario } from '../../core/models/usuario.model';
-import { UsuarioService } from '../../core/services/usuario.service';
+import { Usuario } from '../../../core/models/usuario.model';
+import { UsuarioService } from '../../../core/services/usuario.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-usuarios',

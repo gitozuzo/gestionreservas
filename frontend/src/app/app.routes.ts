@@ -12,16 +12,24 @@ export const routes: Routes = [
         path: 'dashboard',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/auth/admin/dashboard.page').then(
-            (m) => m.DashboardPage
+          import('./features/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
           ),
       },
       {
         path: 'usuarios',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/usuarios/usuarios.page.component').then(
-            (m) => m.UsuariosPageComponent
+          import(
+            './features/usuarios/usuario-list/usuarios.page.component'
+          ).then((m) => m.UsuariosPageComponent),
+      },
+      {
+        path: 'comentarios',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/comentarios/comentario.component').then(
+            (m) => m.ComentarioComponent
           ),
       },
       {
@@ -67,7 +75,41 @@ export const routes: Routes = [
       },
 
       {
+        path: 'perfil',
+        canActivate: [empleadoGuard],
+        loadComponent: () =>
+          import('./features/perfil/pages/perfil.component').then(
+            (m) => m.PerfilComponent
+          ),
+      },
+
+      {
         path: 'reservas',
+        canActivate: [empleadoGuard],
+        loadComponent: () =>
+          import(
+            './features/reservas/reserva-list/reservas.page.component'
+          ).then((m) => m.ReservasPageComponent),
+      },
+      {
+        path: 'reservas/nueva',
+        canActivate: [empleadoGuard],
+        loadComponent: () =>
+          import(
+            './features/reservas/reserva-form/reserva.form.component'
+          ).then((m) => m.ReservaFormComponent),
+      },
+      {
+        path: 'reservas/editar/:id',
+        canActivate: [empleadoGuard],
+        loadComponent: () =>
+          import(
+            './features/reservas/reserva-form/reserva.form.component'
+          ).then((m) => m.ReservaFormComponent),
+      },
+
+      {
+        path: 'misreservas',
         canActivate: [empleadoGuard],
         loadComponent: () =>
           import('./features/auth/reservas/reservas.page').then(

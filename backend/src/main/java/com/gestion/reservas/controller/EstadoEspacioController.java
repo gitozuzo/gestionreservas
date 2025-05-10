@@ -24,7 +24,7 @@ public class EstadoEspacioController {
         return ResponseEntity.ok(estadoEspacioService.findAll());
     }
 
-    // ✅ Obtener usuario por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<EstadoEspacio> getRolById(@PathVariable Long id) {
         return estadoEspacioService.findById(id)

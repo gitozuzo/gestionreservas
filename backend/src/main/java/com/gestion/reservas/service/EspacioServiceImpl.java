@@ -52,11 +52,7 @@ public class EspacioServiceImpl implements EspacioService {
     }
 
 
-    @Override
-    /*public EspacioResponseDTO create(EspacioRequestDTO dto) {
-        Espacio espacio = toEntity(dto);
-        return toDTO(espacioRepo.save(espacio));
-    }*/
+
 
 
     public EspacioResponseDTO create(String nombre, int capacidad, String ubicacion,
@@ -80,7 +76,7 @@ public class EspacioServiceImpl implements EspacioService {
         }
 
         if (imagen != null && !imagen.isEmpty()) {
-            // puedes guardar el archivo en disco o en base64 o como prefieras
+
             String nombreArchivo = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
             Path ruta = Paths.get("uploads", nombreArchivo);
             try {
@@ -108,17 +104,17 @@ public class EspacioServiceImpl implements EspacioService {
             List<Long> equipamientos,
             MultipartFile imagen
     ) {
-        // 1. Buscar espacio existente
+
         Espacio espacio = espacioRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + id));
 
-        // 2. Actualizar campos
+
         espacio.setNombre(nombre);
         espacio.setCapacidad(capacidad);
         espacio.setUbicacion(ubicacion);
         espacio.setDescripcion(descripcion);
 
-        // 3. Asociaciones
+
         espacio.setTipoEspacio(tipoRepo.findById(idTipoEspacio)
                 .orElseThrow(() -> new RuntimeException("Tipo de espacio no encontrado")));
 
@@ -128,7 +124,7 @@ public class EspacioServiceImpl implements EspacioService {
         List<Equipamiento> equipamientoList = equipamientoRepo.findAllById(equipamientos);
         espacio.setEquipamientos(equipamientoList);
 
-        // 4. Guardar imagen si hay
+
         if (imagen != null && !imagen.isEmpty()) {
             String nombreArchivo = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
             Path ruta = Paths.get("uploads", nombreArchivo);
@@ -141,10 +137,10 @@ public class EspacioServiceImpl implements EspacioService {
             }
         }
 
-        // 5. Guardar en base de datos
+
         espacioRepo.save(espacio);
 
-        // 6. Convertir a DTO y retornar
+
         return toDTO(espacio);
     }
 
@@ -155,7 +151,7 @@ public class EspacioServiceImpl implements EspacioService {
         if (optionalEspacio.isPresent()) {
             Espacio espacio = optionalEspacio.get();
 
-            // 1. Eliminar la imagen si existe
+
             String nombreImagen = espacio.getImagen();
             if (nombreImagen != null && !nombreImagen.isBlank()) {
                 Path rutaImagen = Paths.get(uploadDir).resolve(nombreImagen);
@@ -167,7 +163,7 @@ public class EspacioServiceImpl implements EspacioService {
                 }
             }
 
-            // 2. Eliminar el espacio de la base de datos
+
             espacioRepo.deleteById(id);
         }
     }

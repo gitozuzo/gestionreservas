@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthStore } from '../../core/auth/auth.store';
 import { UserRole } from '../../core/auth/user-rol.enum';
+import { NotificacionesBellComponent } from '../notificacion/notificaciones-bell.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NotificacionesBellComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })

@@ -1,29 +1,29 @@
 package com.gestion.reservas.service;
 
+
+import com.gestion.reservas.dto.PerfilInfoDTO;
 import com.gestion.reservas.dto.UsuarioRequestDTO;
 import com.gestion.reservas.dto.UsuarioResponseDTO;
-import com.gestion.reservas.entity.EstadoUsuario;
-import com.gestion.reservas.entity.Rol;
 import com.gestion.reservas.entity.Usuario;
-import com.gestion.reservas.repository.EstadoUsuarioRepository;
-import com.gestion.reservas.repository.RolRepository;
+import com.gestion.reservas.mapper.UsuarioMapper;
 import com.gestion.reservas.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final RolRepository rolRepository;
-    private final EstadoUsuarioRepository estadoUsuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificacionService notificacionService;
+    private final UsuarioMapper usuarioMapper;
 
     @Override
     public List<Usuario> findAll() {
@@ -50,52 +50,105 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    // 🔁 Conversión de DTO a entidad con contraseña cifrada
-    public Usuario toEntity(UsuarioRequestDTO dto,Usuario usuarioExistente) {
-
-        Rol rol = rolRepository.findById(dto.getIdRol())
-                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado"));
-
-        EstadoUsuario estado = estadoUsuarioRepository.findById(dto.getIdEstado())
-                .orElseThrow(() -> new IllegalArgumentException("Estado no encontrado"));
-
-        Usuario usuario = usuarioExistente != null ? usuarioExistente : new Usuario();
-
-        usuario.setNombre(dto.getNombre());
-        usuario.setEmail(dto.getEmail());
-        usuario.setTelefono(dto.getTelefono());
-        usuario.setDireccion(dto.getDireccion());
-        usuario.setRol(rol);
-        usuario.setEstado(estado);
-
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
+    @Override
+    public UsuarioResponseDTO registrarUsuario(UsuarioRequestDTO dto) {
+        Optional<Usuario> existente = findByEmail(dto.getEmail());
+        if (existente.isPresent()) {
+            throw new IllegalStateException("El correo electrónico ya está registrado.");
         }
 
-        return usuario;
+        Usuario nuevo = toEntity(dto, null);
+        Usuario guardado = save(nuevo);
 
+        // Crear notificación
+        String mensaje = String.format(
+                "El usuario se ha creado el día %s.",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+        );
+        notificacionService.crearYEnviarNotificacion(guardado, mensaje);
+        return toDTO(guardado);
     }
 
-    // 🔁 Conversión de entidad a DTO
+    @Override
+    public Optional<UsuarioResponseDTO> actualizarUsuario(Long id, UsuarioRequestDTO dto) {
+        return usuarioRepository.findById(id).map(existing -> {
+
+            // Validar si el correo ya existe en otro usuario
+            Optional<Usuario> existente = findByEmail(dto.getEmail());
+            if (existente.isPresent() && !existente.get().getIdUsuario().equals(id)) {
+                throw new IllegalStateException("El correo electrónico ya está registrado.");
+            }
+
+            Usuario usuarioActualizado = toEntity(dto, existing);
+            usuarioActualizado.setIdUsuario(id);
+            Usuario guardado = usuarioRepository.save(usuarioActualizado);
+
+            // Crear notificación
+            String mensaje = String.format(
+                    "Los datos del usuario se han modificado el día %s.",
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+            );
+            notificacionService.crearYEnviarNotificacion(guardado, mensaje);
+
+            return toDTO(guardado);
+        });
+    }
+
+    public Usuario toEntity(UsuarioRequestDTO dto, Usuario usuarioExistente) {
+        return usuarioMapper.toEntity(dto, usuarioExistente);
+    }
+
     public UsuarioResponseDTO toDTO(Usuario usuario) {
-        return UsuarioResponseDTO.builder()
-                .idUsuario(usuario.getIdUsuario())
-                .nombre(usuario.getNombre())
-                .email(usuario.getEmail())
-                .telefono(usuario.getTelefono())
-                .direccion(usuario.getDireccion())
-                .ultimoAcceso(usuario.getUltimoAcceso())
-                .idRol(usuario.getRol().getIdRol())
-                .rol(usuario.getRol().getDescripcion())
-                        .idEstado(usuario.getEstado().getIdEstado())
-                .estado(usuario.getEstado().getDescripcion())
-                .build();
+        return usuarioMapper.toDTO(usuario);
     }
 
-    // 🔁 Método para listar todos los usuarios como DTOs
     public List<UsuarioResponseDTO> getAllUsuariosDTO() {
-        return usuarioRepository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return usuarioMapper.toDTOList(usuarioRepository.findAll());
     }
+
+
+    public boolean changePassword(Long id, String currentPassword, String newPassword) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) return false;
+
+        Usuario usuario = usuarioOpt.get();
+
+        if (!passwordEncoder.matches(currentPassword, usuario.getPassword())) {
+            return false; // Contraseña actual incorrecta
+        }
+
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+        usuarioRepository.save(usuario);
+
+        // Crear notificación
+        String mensaje = String.format(
+                "La contraseña se ha actualizado el día %s.",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+        );
+        notificacionService.crearYEnviarNotificacion(usuario, mensaje);
+        return true;
+    }
+
+
+    public Optional<UsuarioResponseDTO> actualizarPerfil(Long id, PerfilInfoDTO dto) {
+        return usuarioRepository.findById(id).map(existing -> {
+            existing.setNombre(dto.getNombre());
+            existing.setEmail(dto.getEmail());
+            existing.setTelefono(dto.getTelefono());
+            existing.setDireccion(dto.getDireccion());
+
+            Usuario actualizado = usuarioRepository.save(existing);
+
+            String mensaje = String.format(
+                    "El perfil se ha actualizado el día %s.",
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+            );
+            notificacionService.crearYEnviarNotificacion(actualizado, mensaje);
+
+            return toDTO(actualizado);
+        });
+    }
+
 }
+
+

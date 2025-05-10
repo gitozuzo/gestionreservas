@@ -20,11 +20,21 @@ public class CustomUserDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
+        return User.builder()
+                .username(usuario.getEmail())
+                .password(usuario.getPassword())
+                .roles(usuario.getRol().getDescripcion())
+                .build();
+    }
+
+    public UserDetails loadUserById(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con id: " + id));
 
         return User.builder()
                 .username(usuario.getEmail())
                 .password(usuario.getPassword())
-                .roles(usuario.getRol().getDescripcion()) // rol como cadena
+                .roles(usuario.getRol().getDescripcion())
                 .build();
     }
 }

@@ -6,12 +6,10 @@
           *ngIf="!isEditMode"
           class="bi bi-person-fill-add text-primary fs-3 me-2"
         ></i>
-
         <i
           *ngIf="isEditMode"
           class="bi bi-pencil-square text-warning fs-3 me-2"
         ></i>
-
         <h3 class="mb-0 fw-semibold text-dark">
           {{ isEditMode ? "Editar usuario" : "Nuevo usuario" }}
         </h3>
@@ -20,54 +18,90 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        {{ errorMessage }}
+      </div>
+      <!-- Nombre -->
       <div class="mb-2">
         <label class="form-label small">Nombre</label>
         <input
           type="text"
           class="form-control form-control-sm"
           formControlName="nombre"
+          placeholder="Introduce el nombre completo"
         />
+        <div
+          class="text-danger small"
+          *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid"
+        >
+          El nombre es obligatorio.
+        </div>
       </div>
 
+      <!-- Email -->
       <div class="mb-2">
         <label class="form-label small">Correo electrónico</label>
         <input
           type="email"
           class="form-control form-control-sm"
           formControlName="email"
+          placeholder="ejemplo@correo.com"
         />
+        <div
+          class="text-danger small"
+          *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
+        >
+          <div *ngIf="form.get('email')?.errors?.['required']">
+            El correo es obligatorio.
+          </div>
+          <div *ngIf="form.get('email')?.errors?.['email']">
+            Formato de correo inválido.
+          </div>
+        </div>
       </div>
 
+      <!-- Teléfono -->
       <div class="mb-2">
         <label class="form-label small">Teléfono</label>
         <input
           type="text"
           class="form-control form-control-sm"
           formControlName="telefono"
+          placeholder="Opcional - Ej. 666123456"
         />
       </div>
 
+      <!-- Dirección -->
       <div class="mb-2">
         <label class="form-label small">Dirección</label>
         <input
           type="text"
           class="form-control form-control-sm"
           formControlName="direccion"
+          placeholder="Opcional - Calle, número, ciudad"
         />
       </div>
 
+      <!-- Rol y Estado -->
       <div class="row g-3">
+        <!-- Rol -->
         <div class="col-md-6">
           <label for="idRol" class="form-label">Rol</label>
-
           <select id="idRol" class="form-select" formControlName="idRol">
             <option value="">Seleccione...</option>
             <option *ngFor="let r of roles" [value]="r.idRol">
               {{ r.descripcion }}
             </option>
           </select>
+          <div
+            class="text-danger small"
+            *ngIf="form.get('idRol')?.touched && form.get('idRol')?.invalid"
+          >
+            El rol es obligatorio.
+          </div>
         </div>
 
+        <!-- Estado -->
         <div class="col-md-6">
           <label for="idEstado" class="form-label">Estado</label>
           <select id="idEstado" class="form-select" formControlName="idEstado">
@@ -76,9 +110,18 @@
               {{ e.descripcion }}
             </option>
           </select>
+          <div
+            class="text-danger small"
+            *ngIf="
+              form.get('idEstado')?.touched && form.get('idEstado')?.invalid
+            "
+          >
+            El estado es obligatorio.
+          </div>
         </div>
       </div>
 
+      <!-- Contraseña -->
       <div class="mb-2">
         <label class="form-label small">Contraseña</label>
         <input
@@ -87,8 +130,15 @@
           formControlName="password"
           [placeholder]="isEditMode ? 'Dejar vacío para no cambiar' : ''"
         />
+        <div
+          class="text-danger small"
+          *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+        >
+          La contraseña es obligatoria.
+        </div>
       </div>
 
+      <!-- Botones -->
       <div class="d-flex justify-content-end gap-2 mt-3">
         <button
           type="button"

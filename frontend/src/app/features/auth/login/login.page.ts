@@ -1,4 +1,4 @@
-import { CommonModule, NgClass } from '@angular/common'; // ✅ Añadido NgClass
+import { CommonModule, NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import {
   FormBuilder,
@@ -40,11 +40,12 @@ export class LoginPage {
 
       this.authService.login(email, password).subscribe({
         next: (response) => {
-          this.authStore.login(response.token); // Aquí sí manejas el token
+          this.authStore.login(response.token);
           const rol = this.authStore.getRoleValue();
           console.log(rol);
+          console.log('entra');
           this.router.navigate([
-            rol === UserRole.ADMIN ? '/dashboard' : '/reservas',
+            rol === UserRole.ADMIN ? '/dashboard' : '/misreservas',
           ]);
         },
         error: (err) => {

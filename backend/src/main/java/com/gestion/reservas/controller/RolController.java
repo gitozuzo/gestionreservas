@@ -24,7 +24,7 @@ public class RolController {
         return ResponseEntity.ok(rolService.findAll());
     }
 
-    // ✅ Obtener usuario por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Rol> getRolById(@PathVariable Long id) {
         return rolService.findById(id)
