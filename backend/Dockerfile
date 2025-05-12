@@ -1,7 +1,10 @@
-# Etapa 1: Build de Java + instalación de Python + pip
+# Etapa de construcción
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
+# Crear directorio de trabajo
 WORKDIR /app
+
+# Copiar el código fuente
 COPY . .
 
 # Instalar Python y dependencias
@@ -9,30 +12,25 @@ RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     pip3 install -r ml/requirements.txt
 
-# Construir la app Java
+# Asignar permisos de ejecución al wrapper de Maven
+RUN chmod +x mvnw
+
+# Construir el proyecto Java
 RUN ./mvnw clean install -DskipTests
 
-# Etapa 2: Imagen de producción
+# Etapa de ejecución
 FROM eclipse-temurin:17-jdk
 
+# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar app compilada
+# Copiar artefactos desde la fase de build
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
-
-# Copiar scripts Python y directorio de modelo generado
 COPY --from=build /app/ml ml
+COPY --from=build /app/modelo.pkl modelo.pkl
 
-# Copiar imágenes u otros recursos necesarios
-COPY --from=build /app/uploads uploads
-
-# Instalar Python en producción
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install -r ml/requirements.txt
-
-# Exponer puerto
+# Exponer el puerto de la aplicación
 EXPOSE 8080
 
-# Ejecutar la app Java
+# Comando para ejecutar Spring Boot
 CMD ["java", "-jar", "app.jar"]
