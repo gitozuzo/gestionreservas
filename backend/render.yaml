@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gestionreservas
+    env: java
+    buildCommand: |
+      apt-get update
+      apt-get install -y python3 python3-pip
+      pip3 install -r requirements.txt
+      ./mvnw clean install
+    startCommand: "java -jar target/reservas-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        value: jdbc:postgresql://dpg-d0h4ra15pdvs7388d9ug-a:5432/reservas_g2gc
+      - key: DB_USER
+        value: admin
+      - key: DB_PASS
+        value: NIF1uDCQv0kb8WPXv29o4eUF4FyZbziC
