@@ -50,7 +50,7 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
-		<!-- Lombok (para simplificar código) -->
+		<!-- Lombok  -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -70,6 +70,14 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+        <!-- Driver PostgreSQL para producción -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.1</version>
+            <scope>runtime</scope>
+        </dependency>
 
 		<!-- Herramientas útiles en desarrollo -->
 		<dependency>

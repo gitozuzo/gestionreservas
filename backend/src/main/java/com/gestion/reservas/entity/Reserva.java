@@ -32,5 +32,6 @@ public class Reserva {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private Boolean sincronizado;
+    private int ocupantes;
 }
 

@@ -94,7 +94,7 @@
           </a>
         </li>
 
-        <!-- 🔔 Campana de notificaciones -->
+        <!-- Campana de notificaciones -->
         <li class="nav-item" *ngIf="auth.getIdUsuarioValue() as idUsuario">
           <app-notificaciones-bell
             [idUsuario]="idUsuario"
@@ -120,7 +120,7 @@
           >
             <li>
               <button
-                class="dropdown-item text-danger d-flex align-items-center"
+                class="dropdown-item text-primary d-flex align-items-center"
                 (click)="logout()"
               >
                 <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
@@ -132,3 +132,4 @@
     </div>
   </nav>
 </header>
+t

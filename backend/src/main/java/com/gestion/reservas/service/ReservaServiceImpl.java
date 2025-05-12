@@ -82,7 +82,8 @@ public class ReservaServiceImpl implements ReservaService {
                 reserva.getEstado().getDescripcion(),
                 reserva.getFechaInicio(),
                 reserva.getFechaFin(),
-                reserva.getSincronizado()
+                reserva.getSincronizado(),
+                reserva.getOcupantes()
         );
     }
 
@@ -95,6 +96,7 @@ public class ReservaServiceImpl implements ReservaService {
         reserva.setFechaInicio(dto.getFechaInicio());
         reserva.setFechaFin(dto.getFechaFin());
         reserva.setSincronizado(dto.getSincronizado());
+        reserva.setOcupantes(dto.getOcupantes());
         return reserva;
     }
 }

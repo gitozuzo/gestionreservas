@@ -27,5 +27,6 @@ public class ReservaDTO {
     private LocalDateTime fechaFin;
 
     private Boolean sincronizado;
+    private int ocupantes;
 }
 

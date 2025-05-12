@@ -15,4 +15,6 @@ export interface Reserva {
   fechaFin: string;
 
   sincronizado: boolean;
+
+  ocupantes: number;
 }
