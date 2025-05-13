@@ -13,3 +13,5 @@ services:
         value: admin
       - key: DB_PASS
         value: NIF1uDCQv0kb8WPXv29o4eUF4FyZbziC
+      - key: JWT_SECRET
+        value: NzByJioqcExtTiQ5OHdYayFadFF2MyNGZ1I5KlZjQm5N
