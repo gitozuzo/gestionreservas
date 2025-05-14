@@ -50,9 +50,14 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+
+        System.out.println("🛡️ CAuthenticationProvider...");
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        System.out.println("🛡️ CAuthenticationProvider.2..");
         authProvider.setUserDetailsService(userDetailsService);
+        System.out.println("🛡️ CAuthenticationProvider 3...");
         authProvider.setPasswordEncoder(passwordEncoder());
+        System.out.println("🛡️ CAuthenticationProvider 4...");
         return authProvider;
     }
 
