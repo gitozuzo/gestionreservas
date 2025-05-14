@@ -24,13 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         System.out.println("🛡️ Configurando SecurityFilterChain...");
         http
                 .csrf(csrf -> csrf.disable())
@@ -41,23 +39,18 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
-
         System.out.println("🛡️ CAuthenticationProvider...");
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        System.out.println("🛡️ CAuthenticationProvider.2..");
         authProvider.setUserDetailsService(userDetailsService);
-        System.out.println("🛡️ CAuthenticationProvider 3...");
         authProvider.setPasswordEncoder(passwordEncoder());
-        System.out.println("🛡️ CAuthenticationProvider 4...");
         return authProvider;
     }
 
@@ -70,6 +63,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
+
 
