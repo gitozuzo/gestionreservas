@@ -25,7 +25,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
 
-        console.log("entra servicio login");
+        System.out.println("entra en servicio login 1");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDTO.getEmail(),
@@ -33,12 +34,14 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        console.log("entra servicio login2");
+        System.out.println("entra en servicio login 2");
+
 
         Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        console.log("entra servicio login3");
+        System.out.println("entra en servicio login 3");
+
         usuario.setUltimoAcceso(LocalDateTime.now());
         usuarioRepository.save(usuario);
 
