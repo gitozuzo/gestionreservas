@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
 
-        System.out.println("entra en servicio login 1");
+        System.out.println("entra en servicio login 1 " + loginDTO.getEmail() + " " + loginDTO.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
