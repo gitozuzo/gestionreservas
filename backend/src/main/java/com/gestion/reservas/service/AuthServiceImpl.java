@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,21 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
 
         System.out.println("entra en servicio login 1 " + loginDTO.getEmail() + " " + loginDTO.getPassword());
-
+        try {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDTO.getEmail(),
                         loginDTO.getPassword()
                 )
         );
+
+        } catch (AuthenticationException e) {
+            System.err.println("Error de autenticación: " + e.getMessage());
+            // Aquí puedes loggear el error con un logger adecuado (e.g., SLF4j)
+            // logger.error("Error de autenticación para el usuario {}", loginDTO.getEmail(), e);
+            throw e; // Relanza la excepción para que Spring Security pueda manejarla (e.g., devolver un 401)
+        }
+
 
         System.out.println("entra en servicio login 2");
 
