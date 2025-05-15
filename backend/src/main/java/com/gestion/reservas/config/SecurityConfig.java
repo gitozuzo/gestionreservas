@@ -30,7 +30,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("🛡️ Configurando SecurityFilterChain...");
 
         http
                 .csrf(csrf -> csrf.disable())
@@ -49,7 +48,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        System.out.println("🛡️ Creando AuthenticationProvider...");
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -58,7 +56,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        System.out.println("🛡️ Creando AuthenticationManager manualmente...");
         return new ProviderManager(authenticationProvider());
     }
 
