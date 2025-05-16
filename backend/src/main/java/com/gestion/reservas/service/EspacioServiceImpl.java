@@ -41,7 +41,7 @@ public class EspacioServiceImpl implements EspacioService {
 
     @Override
     public List<EspacioResponseDTO> findAll() {
-        return espacioRepo.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+        return espacioRepo.findAllByOrderByIdEspacioDesc().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
