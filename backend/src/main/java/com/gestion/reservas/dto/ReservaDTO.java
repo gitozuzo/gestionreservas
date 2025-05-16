@@ -28,5 +28,6 @@ public class ReservaDTO {
 
     private Boolean sincronizado;
     private int ocupantes;
+    private Boolean recomendadaia;
 }
 

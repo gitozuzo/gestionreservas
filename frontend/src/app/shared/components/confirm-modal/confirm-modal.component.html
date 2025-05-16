@@ -1,0 +1,54 @@
+<address
+  class="modal fade"
+  [id]="modalId"
+  tabindex="-1"
+  [attr.aria-labelledby]="modalId + 'Label'"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow-sm">
+      <div
+        class="modal-header border-0"
+        [ngClass]="{
+          'bg-soft-danger text-danger-700': type === 'cancel',
+          'bg-soft-success text-success-700': type === 'confirm'
+        }"
+      >
+        <h5 class="modal-title fw-medium">{{ title }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+          (click)="cancel()"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        {{ message }} <strong *ngIf="idReserva">#{{ idReserva }}</strong>
+      </div>
+
+      <div class="modal-footer border-0 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+          (click)="cancel()"
+        >
+          {{ cancelText }}
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="{
+            'btn-soft-danger': type === 'cancel',
+            'btn-soft-success': type === 'confirm'
+          }"
+          (click)="confirm()"
+        >
+          {{ confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</address>

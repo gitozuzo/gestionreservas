@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Reserva {
 
     @Id
@@ -33,5 +34,6 @@ public class Reserva {
     private LocalDateTime fechaFin;
     private Boolean sincronizado;
     private int ocupantes;
+    private Boolean recomendadaia;
 }
 

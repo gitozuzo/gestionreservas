@@ -1,5 +1,5 @@
 export interface Reserva {
-  idReserva: number;
+  idReserva?: number;
   idUsuario: number;
   nombreUsuario: string;
   telefonoUsuario: string;

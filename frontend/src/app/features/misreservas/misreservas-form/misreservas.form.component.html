@@ -110,49 +110,6 @@
           />
         </div>
 
-        <!-- Estado de la reserva -->
-        <div class="mb-3">
-          <label class="form-label">Estado de la reserva</label>
-
-          <!-- Solo lectura en alta (input + badge) -->
-          <div *ngIf="!modoEdicion; else editableEstado">
-            <input
-              type="text"
-              class="form-control mb-1"
-              [value]="getDescripcionEstado(form.get('idEstado')?.value)"
-              readonly
-            />
-            <span
-              class="badge"
-              [ngClass]="{
-                'bg-secondary':
-                  getDescripcionEstado(form.get('idEstado')?.value) ===
-                  'Pendiente',
-                'bg-success':
-                  getDescripcionEstado(form.get('idEstado')?.value) ===
-                  'Confirmada',
-                'bg-danger':
-                  getDescripcionEstado(form.get('idEstado')?.value) ===
-                  'Cancelada',
-                'bg-primary':
-                  getDescripcionEstado(form.get('idEstado')?.value) ===
-                  'Completada'
-              }"
-            >
-              {{ getDescripcionEstado(form.get("idEstado")?.value) }}
-            </span>
-          </div>
-
-          <!-- Editable en modo edición -->
-          <ng-template #editableEstado>
-            <select formControlName="idEstado" class="form-select">
-              <option *ngFor="let estado of estados" [value]="estado.idEstado">
-                {{ estado.descripcion }}
-              </option>
-            </select>
-          </ng-template>
-        </div>
-
         <!-- Sincronizado -->
         <div class="form-check mb-3">
           <input
@@ -163,9 +120,19 @@
           <label class="form-check-label">Sincronizado con calendario</label>
         </div>
 
+        <div class="form-check mb-3">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            formControlName="recomendadoia"
+            [disabled]="true"
+          />
+          <label class="form-check-label">Recomendado por IA</label>
+        </div>
+
         <!-- Botones -->
         <div class="d-flex justify-content-end gap-2">
-          <a class="btn btn-outline-secondary" [routerLink]="['/reservas']"
+          <a class="btn btn-outline-secondary" [routerLink]="['/misreservas']"
             >Cancelar</a
           >
           <button
@@ -224,7 +191,7 @@
 
             <div
               *ngIf="recomendaciones.length === 0"
-              class="alert alert-warning mt-3"
+              class="recomendacion-box bg-light-blue"
             >
               No hay recomendaciones para hoy.
             </div>

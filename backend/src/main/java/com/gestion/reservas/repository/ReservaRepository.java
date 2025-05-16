@@ -14,6 +14,8 @@ import java.util.List;
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
 
+
+
     @Query("SELECT MIN(r.fechaInicio) FROM Reserva r")
     LocalDateTime obtenerFechaInicioMinima();
 
@@ -34,5 +36,21 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             @Param("tipoEspacioId") Long tipoEspacioId,
             @Param("estadoId") Long estadoId
     );
+
+    @Query("""
+  SELECT r FROM Reserva r
+  WHERE r.espacio.idEspacio = :idEspacio
+    AND r.estado.descripcion != 'Cancelada'
+    AND (
+      (r.fechaInicio <= :fin AND r.fechaFin >= :inicio)
+    )
+""")
+    List<Reserva> findByEspacioIdAndRangoFechasSolapado(
+            @Param("idEspacio") Long idEspacio,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin
+    );
+
+    List<Reserva> findAllByOrderByIdReservaDesc();
 
 }

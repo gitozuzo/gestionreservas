@@ -157,8 +157,9 @@ export class ReservasPageComponent implements OnInit {
   eliminarReservaConfirmada(): void {
     if (!this.reservaEliminable) return;
 
+    this.reservaService;
     this.reservaService
-      .deleteReserva(this.reservaEliminable.idReserva)
+      .deleteReserva(this.reservaEliminable!.idReserva!)
       .subscribe(() => {
         this.reservas = this.reservas.filter(
           (r) => r.idReserva !== this.reservaEliminable?.idReserva

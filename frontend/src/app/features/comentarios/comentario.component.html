@@ -147,14 +147,14 @@
 
     <div class="mt-3 d-flex gap-2">
       <button
-        (click)="anular(c.idComentario)"
+        (click)="anular(c.idComentario!)"
         class="btn btn-outline-danger btn-sm"
         [disabled]="c.estadoDescripcion !== 'Pendiente'"
       >
         Anular
       </button>
       <button
-        (click)="aprobar(c.idComentario)"
+        (click)="aprobar(c.idComentario!)"
         class="btn btn-outline-success btn-sm"
         [disabled]="c.estadoDescripcion !== 'Pendiente'"
       >

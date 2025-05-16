@@ -57,12 +57,12 @@ export class ComentarioComponent implements OnInit {
   aplicarFiltro(): void {
     this.comentariosFiltrados = this.comentarios.filter((comentario) => {
       const coincideNombre = comentario.nombreUsuario
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(this.filtroNombre.toLowerCase());
 
       const coincideEstado =
         !this.filtroEstado ||
-        comentario.estadoDescripcion.toLowerCase() ===
+        comentario.estadoDescripcion?.toLowerCase() ===
           this.filtroEstado.toLowerCase();
 
       const coincideValoracion =
@@ -73,7 +73,9 @@ export class ComentarioComponent implements OnInit {
         .toLowerCase()
         .includes(this.filtroTexto.toLowerCase());
 
-      const fechaComentario = new Date(comentario.fecha);
+      const fechaComentario = comentario.fecha
+        ? new Date(comentario.fecha)
+        : null;
       const desde = this.filtroFechaDesde
         ? new Date(this.filtroFechaDesde)
         : null;
@@ -82,8 +84,8 @@ export class ComentarioComponent implements OnInit {
         : null;
 
       const coincideFecha =
-        (!desde || fechaComentario >= desde) &&
-        (!hasta || fechaComentario <= hasta);
+        (!desde || (fechaComentario && fechaComentario >= desde)) &&
+        (!hasta || (fechaComentario && fechaComentario <= hasta));
 
       return (
         coincideNombre &&

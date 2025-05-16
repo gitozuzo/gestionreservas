@@ -54,7 +54,7 @@ export class ReservaFormComponent implements OnInit {
     this.form = this.fb.group({
       idUsuario: ['', Validators.required],
       idEspacio: ['', Validators.required],
-      idEstado: ['', Validators.required],
+      idEstado: [{ value: 2, disabled: true }, Validators.required], // Por defecto "Pendiente"
       fechaInicio: ['', Validators.required],
       horaInicio: ['', Validators.required],
       fechaFin: ['', Validators.required],
@@ -103,7 +103,10 @@ export class ReservaFormComponent implements OnInit {
               fechaInicio: reserva.fechaInicio.slice(0, 10),
               fechaFin: reserva.fechaFin.slice(0, 10),
               numeroOcupantes: reserva.ocupantes,
+              idEstado: reserva.idEstado,
             });
+
+            this.form.get('idEstado')?.enable(); // solo editable en modo edición
             this.actualizarEspacioSeleccionado();
           });
       } else {
@@ -165,10 +168,10 @@ export class ReservaFormComponent implements OnInit {
   guardar(): void {
     if (this.form.invalid) return;
 
-    const formValue = this.form.value;
+    const formValue = this.form.getRawValue(); // incluye campos deshabilitados
 
     const reserva: Reserva = {
-      idReserva: this.idReserva || 0,
+      ...(this.modoEdicion ? { idReserva: this.idReserva } : {}), // solo incluir en edición
       idUsuario: formValue.idUsuario,
       idEspacio: formValue.idEspacio,
       idEstado: formValue.idEstado,
@@ -200,5 +203,10 @@ export class ReservaFormComponent implements OnInit {
 
   getImagenUrl(nombreImagen: string): string {
     return `${environment.apiUrl}/uploads/${nombreImagen}`;
+  }
+
+  getDescripcionEstado(idEstado: number): string {
+    const estado = this.estados.find((e) => e.idEstado === idEstado);
+    return estado ? estado.descripcion : 'Pendiente';
   }
 }

@@ -112,10 +112,20 @@ export const routes: Routes = [
         path: 'misreservas',
         canActivate: [empleadoGuard],
         loadComponent: () =>
-          import('./features/auth/reservas/reservas.page').then(
-            (m) => m.ReservasPage
-          ),
+          import(
+            './features/misreservas/misreservas-list/misreservas.page.component'
+          ).then((m) => m.MisReservasPageComponent),
       },
+
+      {
+        path: 'misreservas/nueva',
+        canActivate: [empleadoGuard],
+        loadComponent: () =>
+          import(
+            './features/misreservas/misreservas-form/misreservas.form.component'
+          ).then((m) => m.MisReservasFormComponent),
+      },
+
       {
         path: '',
         redirectTo: '/login',

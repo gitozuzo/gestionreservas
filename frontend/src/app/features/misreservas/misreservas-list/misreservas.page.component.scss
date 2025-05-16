@@ -1,0 +1,152 @@
+.text-danger-soft {
+  color: #dc3545;
+  opacity: 0.75;
+}
+
+.text-danger-soft:hover {
+  opacity: 1;
+}
+
+/* Badge de estado por tipo */
+.estado-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.estado-confirmada {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.estado-completada {
+  background-color: #e0dcfc;
+  color: #4b2990;
+}
+
+.estado-cancelada {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.estado-no-utilizada {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+/* Hover efectos en acciones: solo cambio de color, sin animaciones */
+.hover-confirm {
+  cursor: pointer;
+  color: #198754;
+}
+
+.hover-confirm:hover {
+  color: #0c7c59;
+  text-decoration: none;
+}
+
+.hover-cancel {
+  cursor: pointer;
+  color: #dc3545;
+  opacity: 0.85;
+}
+
+.hover-cancel:hover {
+  color: #b02a37;
+  opacity: 1;
+}
+
+.hover-action {
+  cursor: pointer;
+  color: #6f42c1;
+}
+
+.hover-action:hover {
+  color: #5e35b1;
+  text-decoration: none;
+}
+
+/* Comentario icono */
+.hover-comment {
+  background-color: transparent;
+}
+
+.hover-comment:hover {
+  background-color: #e0e0e0;
+}
+
+.hover-comment i {
+  color: inherit;
+}
+
+/* Utilidades */
+.text-purple {
+  color: #7b61ff;
+}
+
+.bg-purple-subtle {
+  background-color: #f3efff;
+}
+
+/*modal comentarios*/
+
+#comentarioModal {
+  .modal-content {
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
+  }
+
+  .form-floating textarea {
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+  }
+
+  .btn-outline-secondary {
+    padding: 0.5rem 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+}
+
+.comentario-icon-wrapper {
+  background-color: #e0f0ff; // azul claro
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  .comentario-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 0.65rem;
+    padding: 2px 5px;
+    border-radius: 999px;
+    line-height: 1;
+  }
+}
