@@ -4,15 +4,13 @@ import com.gestion.reservas.dto.DashBoardDTO;
 import com.gestion.reservas.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/dashboard")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class DashboardController {
 
