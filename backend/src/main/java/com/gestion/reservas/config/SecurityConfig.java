@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+System.out.println("entra asecurityfilrechain");
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
@@ -49,9 +49,17 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        System.out.println("entra authenticationProvider 1");
+
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        System.out.println("entra authenticationProvider 2");
+
         authProvider.setUserDetailsService(userDetailsService);
+        System.out.println("entra authenticationProvider 3");
+
         authProvider.setPasswordEncoder(passwordEncoder());
+        System.out.println("entra authenticationProvider 4");
+
         return authProvider;
     }
 

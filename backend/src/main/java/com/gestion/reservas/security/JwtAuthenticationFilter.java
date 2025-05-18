@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("entra doFilterInternal 1");
 
 
         String authHeader = request.getHeader("Authorization");
@@ -46,14 +47,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        System.out.println("entra doFilterInternal 2");
+
         Long idUsuario = jwtService.extractIdUsuario(jwt);
 
         if (idUsuario != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
+            System.out.println("entra doFilterInternal 3");
+
             UserDetails userDetails = userDetailsService.loadUserById(idUsuario);
 
+            System.out.println("entra doFilterInternal 4");
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                System.out.println("entra doFilterInternal 5");
 
 
                 UsernamePasswordAuthenticationToken authToken =
@@ -63,6 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
 
+                System.out.println("entra doFilterInternal 6");
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -70,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("Token inválido");
             }
         }
+        System.out.println("entra doFilterInternal 7");
 
         filterChain.doFilter(request, response);
     }
