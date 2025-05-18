@@ -60,6 +60,7 @@ export class DashboardComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
+    console.log('entra 1');
     this.tipoEspacioService.getTiposEspacio().subscribe({
       next: (tipos) => {
         this.tiposEspacio = tipos;
@@ -68,6 +69,7 @@ export class DashboardComponent implements AfterViewInit {
         console.error('Error al cargar tipos de espacio', err);
       },
     });
+    console.log('entra 2');
 
     this.estadoReservaService.getEstadosReserva().subscribe({
       next: (estados) => {
@@ -77,6 +79,8 @@ export class DashboardComponent implements AfterViewInit {
         console.error('Error al cargar los estados de la reserva', err);
       },
     });
+
+    console.log('entra 3');
 
     this.cargarDashboard();
   }
@@ -96,8 +100,10 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   cargarDashboard(): void {
+    console.log('entra 4');
     this.dashboardService.obtenerDatosDashboard(this.filtro).subscribe({
       next: (data: DashboardResponse) => {
+        console.log('entra 5');
         this.kpi = data.kpi;
         this.ultimasReservas = data.ultimasReservas;
         this.reservasPeriodo = data.reservasPeriodo;
@@ -106,6 +112,7 @@ export class DashboardComponent implements AfterViewInit {
         this.cargarGraficos();
       },
       error: (error) => {
+        console.log('entra 6');
         console.error('Error al cargar datos del dashboard', error);
       },
     });
