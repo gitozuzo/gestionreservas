@@ -46,15 +46,13 @@ export class NotificacionesBellComponent implements OnInit {
   }
 
   cargarNotificaciones() {
-    /*if (!this.idUsuario) return;
+    if (!this.idUsuario) return;
 
     this.notificacionService
       .getNotificacionesUsuario(this.idUsuario)
       .subscribe((data) => {
         this.notificaciones = data.filter((n) => !n.leida);
-      });*/
-
-    null;
+      });
   }
 
   marcarComoLeida(notificacion: Notificacion) {
