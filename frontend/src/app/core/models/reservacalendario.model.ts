@@ -5,4 +5,5 @@ export interface ReservaCalendario {
   usuario: string;
   estado: string;
   color: string;
+  tipo: string;
 }
