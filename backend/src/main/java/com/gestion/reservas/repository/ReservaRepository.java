@@ -11,10 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ReservaRepository extends JpaRepository<Reserva, Long> {
-
-
-
+public interface ReservaRepository extends JpaRepository<Reserva, Long>, ReservaRepositoryCustom {
 
     @Query("SELECT MIN(r.fechaInicio) FROM Reserva r")
     LocalDateTime obtenerFechaInicioMinima();
@@ -23,28 +20,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     LocalDateTime obtenerFechaFinMaxima();
 
     @Query("""
-    SELECT r FROM Reserva r
-    JOIN r.espacio e
-    WHERE (:fechaInicio IS NULL OR r.fechaInicio >= :fechaInicio)
-      AND (:fechaFin IS NULL OR r.fechaFin <= :fechaFin)
-      AND (:tipoEspacioId IS NULL OR e.tipoEspacio.idTipoEspacio = :tipoEspacioId)
-      AND (:estadoId IS NULL OR r.estado.idEstado = :estadoId)
-""")
-    List<Reserva> buscarPorFiltros(
-            @Param("fechaInicio") LocalDateTime fechaInicio,
-            @Param("fechaFin") LocalDateTime fechaFin,
-            @Param("tipoEspacioId") Long tipoEspacioId,
-            @Param("estadoId") Long estadoId
-    );
-
-    @Query("""
-  SELECT r FROM Reserva r
-  WHERE r.espacio.idEspacio = :idEspacio
-    AND r.estado.descripcion != 'Cancelada'
-    AND (
-      (r.fechaInicio <= :fin AND r.fechaFin >= :inicio)
-    )
-""")
+      SELECT r FROM Reserva r
+      WHERE r.espacio.idEspacio = :idEspacio
+        AND r.estado.descripcion != 'Cancelada'
+        AND (
+          (r.fechaInicio <= :fin AND r.fechaFin >= :inicio)
+        )
+    """)
     List<Reserva> findByEspacioIdAndRangoFechasSolapado(
             @Param("idEspacio") Long idEspacio,
             @Param("inicio") LocalDateTime inicio,
@@ -52,5 +34,4 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     );
 
     List<Reserva> findAllByOrderByIdReservaDesc();
-
 }
