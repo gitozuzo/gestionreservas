@@ -109,6 +109,15 @@ export const routes: Routes = [
       },
 
       {
+        path: 'calendario-reservas',
+        canActivate: [empleadoGuard], // o adminGuard, según lo necesites
+        loadComponent: () =>
+          import(
+            './features/calendarioreservas/calendario-reservas.component'
+          ).then((m) => m.CalendarioReservasComponent),
+      },
+
+      {
         path: 'misreservas',
         canActivate: [empleadoGuard],
         loadComponent: () =>

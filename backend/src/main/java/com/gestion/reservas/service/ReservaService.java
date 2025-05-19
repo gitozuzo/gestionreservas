@@ -1,5 +1,6 @@
 package com.gestion.reservas.service;
 
+import com.gestion.reservas.dto.ReservaCalendarioDTO;
 import com.gestion.reservas.dto.ReservaDTO;
 import com.gestion.reservas.entity.Usuario;
 
@@ -11,5 +12,6 @@ public interface ReservaService {
     Optional<ReservaDTO> findById(Long id);
     ReservaDTO save(ReservaDTO reservaDTO);
     void deleteById(Long id);
+    List<ReservaCalendarioDTO> obtenerReservasDelMes(int mes, int anio);
 
 }

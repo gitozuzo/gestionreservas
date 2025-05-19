@@ -1,6 +1,7 @@
 package com.gestion.reservas.service;
 
 import com.gestion.reservas.dto.NotificacionDTO;
+import com.gestion.reservas.dto.ReservaCalendarioDTO;
 import com.gestion.reservas.dto.ReservaDTO;
 import com.gestion.reservas.entity.*;
 import com.gestion.reservas.mapper.NotificacionMapper;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -100,6 +102,33 @@ public class ReservaServiceImpl implements ReservaService {
         reserva.setOcupantes(dto.getOcupantes());
         reserva.setRecomendadaia(dto.getRecomendadaia());
         return reserva;
+    }
+
+    @Override
+    public List<ReservaCalendarioDTO> obtenerReservasDelMes(int mes, int anio) {
+        LocalDateTime inicio = LocalDate.of(anio, mes, 1).atStartOfDay();
+        LocalDateTime fin = inicio.plusMonths(1).minusSeconds(1);
+
+        List<Reserva> reservas = reservaRepository.findByFechaInicioBetween(inicio, fin);
+
+        return reservas.stream().map(r -> new ReservaCalendarioDTO(
+                r.getIdReserva(),
+                r.getFechaInicio().toLocalDate(),
+                r.getEspacio().getNombre(),
+                r.getUsuario().getNombre(),
+                r.getEstado().getDescripcion(),
+                colorPorEstado(r.getEstado().getDescripcion())
+        )).toList();
+    }
+
+    private String colorPorEstado(String estado) {
+        return switch (estado.toLowerCase()) {
+            case "Confirmada" -> "#d1e7dd";
+            case "Pendiente"  -> "#fff3cd";
+            case "Completada" -> "#e0dcfc";
+            case "Cancelada"  -> "#f8d7da";
+            default -> "#e3f2fd";
+        };
     }
 }
 

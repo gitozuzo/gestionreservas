@@ -1,0 +1,79 @@
+/* ===== Modern FullCalendar Header Styling ===== */
+.fc .fc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #fff;
+  border: 1px solid #e5e7eb; // light gray
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Título centrado */
+.fc-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827; // gray-900
+}
+
+/* Botón "Hoy" */
+.fc-today-button {
+  background-color: #ede9fe;
+  color: #7c3aed;
+  border: none;
+  border-radius: 9999px; /* pill */
+  padding: 5px 14px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.fc-today-button:hover {
+  background-color: #ddd6fe;
+}
+
+/* Prev/Next buttons */
+.fc-prev-button,
+.fc-next-button {
+  background-color: transparent;
+  color: #6b7280; // gray-500
+  border: none;
+  font-size: 1.2rem;
+  padding: 6px 12px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* ============================== */
+/* View Selector (Mes, Semana...) */
+/* ============================== */
+
+.fc-button-group {
+  background-color: #f9fafb;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid #e5e7eb;
+}
+
+.fc-button-group .fc-button {
+  border: none !important;
+  background-color: transparent;
+  color: #374151; // gray-700
+  padding: 5px 14px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  border-radius: 9999px !important;
+}
+
+.fc-button-group .fc-button.fc-button-active {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}

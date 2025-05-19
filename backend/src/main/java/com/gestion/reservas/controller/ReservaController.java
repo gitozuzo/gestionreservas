@@ -1,5 +1,6 @@
 package com.gestion.reservas.controller;
 
+import com.gestion.reservas.dto.ReservaCalendarioDTO;
 import com.gestion.reservas.dto.ReservaDTO;
 import com.gestion.reservas.service.ReservaService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,15 @@ public class ReservaController {
 
         reservaService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/calendario")
+    public ResponseEntity<List<ReservaCalendarioDTO>> getReservasParaCalendario(
+            @RequestParam int mes,
+            @RequestParam int anio) {
+
+        List<ReservaCalendarioDTO> reservas = reservaService.obtenerReservasDelMes(mes, anio);
+        return ResponseEntity.ok(reservas);
     }
 }
 

@@ -34,4 +34,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>, Reserva
     );
 
     List<Reserva> findAllByOrderByIdReservaDesc();
+
+    List<Reserva> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
 }
