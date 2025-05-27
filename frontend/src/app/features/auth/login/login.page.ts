@@ -38,6 +38,8 @@ export class LoginPage {
     if (this.form.valid) {
       const { email, password } = this.form.value;
 
+      this.authService.logout();
+
       this.authService.login(email, password).subscribe({
         next: (response) => {
           this.authStore.login(response.token);
