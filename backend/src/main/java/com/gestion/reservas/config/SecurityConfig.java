@@ -38,6 +38,7 @@ System.out.println("entra asecurityfilrechain");
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/google/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -49,17 +50,10 @@ System.out.println("entra asecurityfilrechain");
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        System.out.println("entra authenticationProvider 1");
 
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        System.out.println("entra authenticationProvider 2");
-
         authProvider.setUserDetailsService(userDetailsService);
-        System.out.println("entra authenticationProvider 3");
-
         authProvider.setPasswordEncoder(passwordEncoder());
-        System.out.println("entra authenticationProvider 4");
-
         return authProvider;
     }
 

@@ -21,6 +21,9 @@ public interface MisReservasService {
     void confirmarReserva(Long idReserva);
 
     boolean estaDisponible(Long idEspacio, String inicioStr, String finStr);
+
+    List<MisReservasDTO> obtenerReservasPorUsuario(Long idUsuario);
+
 }
 
 

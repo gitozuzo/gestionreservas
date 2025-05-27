@@ -1,5 +1,6 @@
 package com.gestion.reservas.repository;
 
+import com.gestion.reservas.entity.EstadoReserva;
 import com.gestion.reservas.entity.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long>, ReservaRepositoryCustom {
@@ -36,4 +38,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>, Reserva
     List<Reserva> findAllByOrderByIdReservaDesc();
 
     List<Reserva> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<Reserva> findByEstadoAndFechaFinBefore(EstadoReserva estado, LocalDateTime fechaFin);
+
+    List<Reserva> findByUsuarioIdUsuario(Long idUsuario);
+
 }

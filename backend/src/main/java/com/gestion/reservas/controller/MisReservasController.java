@@ -84,4 +84,12 @@ public class MisReservasController {
         return ResponseEntity.ok(disponible);
     }
 
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<MisReservasDTO>> getReservasPorUsuario(@PathVariable Long idUsuario) {
+        List<MisReservasDTO> reservas = reservaService.obtenerReservasPorUsuario(idUsuario);
+        return ResponseEntity.ok(reservas);
+    }
+
+
+
 }

@@ -35,5 +35,7 @@ public class Reserva {
     private Boolean sincronizado;
     private int ocupantes;
     private Boolean recomendadaia;
+    private String eventid;
+    private Boolean usadaenmodelo;
 }
 

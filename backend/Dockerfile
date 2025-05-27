@@ -10,7 +10,7 @@ COPY . .
 # Instalar Python y dependencias
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
-    pip3 install -r ml/requirements.txt
+    pip3 install -r ml/requirements_postgresql.txt
 
 # Asignar permisos de ejecución al wrapper de Maven
 RUN chmod +x mvnw

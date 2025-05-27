@@ -43,6 +43,8 @@ public class MisReservasMapper {
         EstadoReservaDTO estadoDTO = EstadoReservaDTO.builder()
                 .idEstado(reserva.getEstado().getIdEstado())
                 .descripcion(reserva.getEstado().getDescripcion())
+                .color(reserva.getEstado().getColor())
+                .bgcolor(reserva.getEstado().getBgcolor())
                 .build();
 
         return MisReservasDTO.builder()
@@ -55,6 +57,7 @@ public class MisReservasMapper {
                 .sincronizado(reserva.getSincronizado())
                 .ocupantes(reserva.getOcupantes())
                 .recomendadaia(reserva.getRecomendadaia())
+                .eventid(reserva.getEventid())
                 .build();
     }
 
@@ -69,6 +72,8 @@ public class MisReservasMapper {
                 .sincronizado(dto.isSincronizado())
                 .ocupantes(dto.getOcupantes())
                 .recomendadaia(dto.isRecomendadaia())
+                .eventid(dto.getEventid())
+                .usadaenmodelo(false)
                 .build();
     }
 }

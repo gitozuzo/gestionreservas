@@ -1,0 +1,2 @@
+# Ignorar archivo local con secretos
+/backend/src/main/resources/application-local.properties

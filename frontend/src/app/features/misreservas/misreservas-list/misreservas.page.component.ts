@@ -9,6 +9,7 @@ import { Comentario } from '../../../core/models/comentario.model';
 import { MisReserva } from '../../../core/models/misreserva.model';
 import { ComentarioService } from '../../../core/services/comentario.service';
 import { EstadoReservaService } from '../../../core/services/estadoreserva.service';
+import { GoogleAuthService } from '../../../core/services/googleauth.service';
 import { MisReservaService } from '../../../core/services/misreserva.service';
 import { TipoEspacioService } from '../../../core/services/tipoespacio.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
@@ -74,6 +75,8 @@ export class MisReservasPageComponent implements OnInit {
 
   soloLecturaComentario = false;
 
+  cargando: boolean = true;
+
   constructor(
     private reservaService: MisReservaService,
     private comentarioService: ComentarioService,
@@ -81,7 +84,8 @@ export class MisReservasPageComponent implements OnInit {
     private router: Router,
     private tipoEspacioService: TipoEspacioService,
     private estadoReservaService: EstadoReservaService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: GoogleAuthService
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +94,7 @@ export class MisReservasPageComponent implements OnInit {
     this.reservaService.getReservas().subscribe((data) => {
       this.reservas = data.filter((r) => r.usuario.idUsuario === usuarioId);
       this.aplicarFiltro();
+      this.cargando = false;
     });
 
     this.comentarioService.listar().subscribe((data) => {
@@ -165,9 +170,6 @@ export class MisReservasPageComponent implements OnInit {
     this.intentoEnviarComentario = false;
     this.reservaSeleccionada = reserva;
 
-    console.log('reserva', reserva);
-    console.log('this.comentarios', this.comentarios);
-
     const existente = this.comentarios.find(
       (c) => c.idReserva === reserva.idReserva!
     );
@@ -222,7 +224,7 @@ export class MisReservasPageComponent implements OnInit {
         });
     } else {
       this.comentarioService.crearComentario(comentario).subscribe((nuevo) => {
-        this.toastr.info(
+        this.toastr.success(
           `              
             <div class="toast-content">
               <div class="toast-title">Comentario Creado</div>
@@ -236,11 +238,10 @@ export class MisReservasPageComponent implements OnInit {
             enableHtml: true,
             toastClass: 'ngx-toastr custom-toast toast-info',
             closeButton: true,
-            timeOut: 2000,
+            timeOut: 3000,
           }
         );
 
-        // Recarga las reservas desde el backend
         this.cargarDatosIniciales();
 
         this.comentarios.push(nuevo);
@@ -326,53 +327,69 @@ export class MisReservasPageComponent implements OnInit {
   cancelarReservaConfirmada(): void {
     if (!this.reservaPendiente?.idReserva) return;
 
-    this.reservaService
-      .cancelReserva(this.reservaPendiente.idReserva)
-      .subscribe({
-        next: () => {
-          // Limpia la reserva pendiente
-          this.reservaPendiente = null;
+    const idReserva = this.reservaPendiente.idReserva;
 
-          if (this.modalInstance) {
-            this.modalInstance.hide();
-          }
-
-          this.toastr.info(
-            `              
-              <div class="toast-content">
-                <div class="toast-title">Reserva cancelada</div>
-                <div class="toast-message">
-                  Tu reserva ha sido Cancelada correctamente.
-                </div>
-              </div>
-            `,
-            '',
-            {
-              enableHtml: true,
-              toastClass: 'ngx-toastr custom-toast toast-info',
-              closeButton: true,
-              timeOut: 4000,
-            }
+    // Si está sincronizada, comprobar que el usuario esté autenticado en Google
+    if (this.reservaPendiente.sincronizado) {
+      this.authService.checkTokenStatus().subscribe((tokenPresente) => {
+        if (tokenPresente) {
+          this.realizarCancelacion(idReserva);
+        } else {
+          const popup = window.open(
+            `${environment.apiUrl}/api/google/auth`,
+            '_blank'
           );
 
-          // Recarga las reservas desde el backend
-          this.cargarDatosIniciales();
-        },
-        error: (err) => {
-          console.error('Error al cancelar la reserva', err);
-          alert('No se pudo cancelar la reserva.');
-        },
+          const espera = setInterval(() => {
+            if (popup?.closed) {
+              clearInterval(espera);
+              this.realizarCancelacion(idReserva);
+            }
+          }, 1000);
+        }
       });
+    } else {
+      this.realizarCancelacion(idReserva);
+    }
+  }
+
+  private realizarCancelacion(idReserva: number): void {
+    this.reservaService.cancelReserva(idReserva).subscribe({
+      next: () => {
+        this.reservaPendiente = null;
+        this.modalInstance?.hide();
+
+        this.toastr.success(
+          `
+          <div class="toast-content">
+            <div class="toast-title">Reserva cancelada</div>
+            <div class="toast-message">Tu reserva ha sido Cancelada correctamente.</div>
+          </div>
+          `,
+          '',
+          {
+            enableHtml: true,
+            toastClass: 'ngx-toastr custom-toast toast-info',
+            closeButton: true,
+            timeOut: 3000,
+          }
+        );
+
+        this.cargarDatosIniciales();
+      },
+      error: (err) => {
+        console.error('Error al cancelar la reserva', err);
+        alert('No se pudo cancelar la reserva.');
+      },
+    });
   }
 
   cargarDatosIniciales(): void {
     const usuarioId = this.authStore.getIdUsuarioValue();
 
     this.reservaService.getReservas().subscribe((data) => {
-      // Carga todas las reservas del usuario
       this.reservas = data.filter((r) => r.usuario.idUsuario === usuarioId);
 
-      // Reaplica los filtros existentes
       this.aplicarFiltro();
     });
 
@@ -386,6 +403,7 @@ export class MisReservasPageComponent implements OnInit {
 
     this.estadoReservaService.getEstadosReserva().subscribe((estados) => {
       this.estadosReserva = estados;
+      console.log('estados de reservas ', estados);
     });
   }
 
@@ -401,14 +419,13 @@ export class MisReservasPageComponent implements OnInit {
   }
 
   confirmarReserva(reserva: MisReserva): void {
-    // Validación: solo se puede confirmar si la fecha de inicio es hoy
     if (!this.esHoy(reserva.fechaInicio)) {
       this.toastr.info(
         `              
           <div class="toast-content">
             <div class="toast-title">No es posible confirmar</div>
             <div class="toast-message">
-              Solo puedes confirmar una reserva el mismo día.
+              Solo puedes confirmar una reserva el <strong>mismo día</strong>.
             </div>
           </div>
         `,
@@ -417,21 +434,20 @@ export class MisReservasPageComponent implements OnInit {
           enableHtml: true,
           toastClass: 'ngx-toastr custom-toast toast-info',
           closeButton: true,
-          timeOut: 4000,
+          timeOut: 3000,
         }
       );
 
       return;
     }
 
-    // Si es hoy, guardar reserva pendiente y mostrar modal
     this.reservaPendiente = reserva;
 
     this.modalConfig = {
       modalId: 'confirmModal',
       type: 'confirm',
       title: 'Confirmar reserva',
-      message: '¿Estás seguro de que deseas confirmar la reserva',
+      message: '¿Estás seguro de que deseas confirmar la reserva?',
       confirmText: 'Sí, confirmar',
       cancelText: 'Cancelar',
     };
@@ -451,7 +467,7 @@ export class MisReservasPageComponent implements OnInit {
         next: () => {
           this.reservaPendiente = null;
 
-          this.toastr.info(
+          this.toastr.success(
             `              
               <div class="toast-content">
                 <div class="toast-title">Reserva confirmada</div>
@@ -465,11 +481,11 @@ export class MisReservasPageComponent implements OnInit {
               enableHtml: true,
               toastClass: 'ngx-toastr custom-toast toast-info',
               closeButton: true,
-              timeOut: 4000,
+              timeOut: 3000,
             }
           );
 
-          this.cargarDatosIniciales(); // Actualiza reservas
+          this.cargarDatosIniciales();
 
           if (this.modalInstance) {
             this.modalInstance.hide();
@@ -492,7 +508,7 @@ export class MisReservasPageComponent implements OnInit {
               enableHtml: true,
               toastClass: 'ngx-toastr custom-toast toast-info',
               closeButton: true,
-              timeOut: 4000,
+              timeOut: 3000,
             }
           );
         },

@@ -15,6 +15,7 @@ import { MisReserva } from '../../../core/models/misreserva.model';
 import { Recomendacion } from '../../../core/models/recomendacion.model';
 import { EspacioService } from '../../../core/services/espacio.service';
 import { EstadoReservaService } from '../../../core/services/estadoreserva.service';
+import { GoogleAuthService } from '../../../core/services/googleauth.service';
 import { MisReservaService } from '../../../core/services/misreserva.service';
 import { RecomendacionService } from '../../../core/services/recomendacion.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
@@ -32,6 +33,9 @@ export class MisReservasFormComponent implements OnInit {
   form: FormGroup;
   modoEdicion = false;
   idReserva?: number;
+
+  returnTo: string = '/misreservas';
+  fechaDesdeCalendario: Date | null = null;
 
   usuarios: any[] = [];
   espacios: any[] = [];
@@ -54,7 +58,8 @@ export class MisReservasFormComponent implements OnInit {
     private authStore: AuthStore,
     private route: ActivatedRoute,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private googleAuthService: GoogleAuthService
   ) {
     this.form = this.fb.group({
       idUsuario: ['', Validators.required],
@@ -76,6 +81,20 @@ export class MisReservasFormComponent implements OnInit {
       this.form.patchValue({ idUsuario: usuarioId });
     }
 
+    this.route.queryParams.subscribe((params) => {
+      if (params['returnTo']) {
+        this.returnTo = params['returnTo'];
+      }
+
+      if (params['fecha']) {
+        const fecha = new Date(params['fecha']);
+        if (!isNaN(fecha.getTime())) {
+          this.fechaDesdeCalendario = fecha;
+          this.preRellenarFechas(fecha);
+        }
+      }
+    });
+
     this.usuarioService.getUsuarios().subscribe((data) => {
       this.usuarios = data;
       this.usuarioNombre =
@@ -83,7 +102,7 @@ export class MisReservasFormComponent implements OnInit {
     });
 
     this.espacioService.getEspacios().subscribe((data) => {
-      this.espacios = data;
+      this.espacios = data.filter((e) => e.estado.descripcion === 'Disponible');
 
       // Si viene de "reservar de nuevo"
       const espacioId = history.state?.espacioId;
@@ -111,7 +130,6 @@ export class MisReservasFormComponent implements OnInit {
       }
     });
 
-    // Detectar cambio de sala manual y resetear recomendadoIA si aplica
     this.form.get('idEspacio')?.valueChanges.subscribe((idSeleccionado) => {
       this.actualizarEspacioSeleccionado();
 
@@ -215,20 +233,19 @@ export class MisReservasFormComponent implements OnInit {
     const horaFinStr = this.form.get('horaFin')?.value;
 
     if (!fechaInicioStr || !horaInicioStr || !fechaFinStr || !horaFinStr) {
-      return false; // Si falta algún dato, no validamos aún
+      return false;
     }
 
     const fechaInicio = new Date(`${fechaInicioStr}T${horaInicioStr}`);
     const fechaFin = new Date(`${fechaFinStr}T${horaFinStr}`);
 
-    // Validar que inicio no sea en el pasado
     if (fechaInicio < fechaHoy) {
       this.toastr.info(
         `              
           <div class="toast-content">
             <div class="toast-title">Fecha inválida</div>
             <div class="toast-message">
-              La fecha y hora de inicio no puede ser anterior a ahora.
+              La fecha y hora de inicio no pueden ser anteriores al momento actual.
             </div>
           </div>
         `,
@@ -237,21 +254,20 @@ export class MisReservasFormComponent implements OnInit {
           enableHtml: true,
           toastClass: 'ngx-toastr custom-toast toast-info',
           closeButton: true,
-          timeOut: 4000,
+          timeOut: 3000,
         }
       );
 
       return false;
     }
 
-    // Validar que fin no sea anterior a inicio
     if (fechaFin <= fechaInicio) {
       this.toastr.info(
         `              
           <div class="toast-content">
             <div class="toast-title">Fecha inválida</div>
             <div class="toast-message">
-              La fecha y hora de finalización debe ser posterior al inicio.
+             La fecha y hora de finalización deben ser posteriores a la de inicio.
             </div>
           </div>
         `,
@@ -260,7 +276,7 @@ export class MisReservasFormComponent implements OnInit {
           enableHtml: true,
           toastClass: 'ngx-toastr custom-toast toast-info',
           closeButton: true,
-          timeOut: 4000,
+          timeOut: 3000,
         }
       );
 
@@ -271,25 +287,68 @@ export class MisReservasFormComponent implements OnInit {
   }
 
   guardar(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || !this.validarFechas()) return;
 
-    if (!this.validarFechas()) return;
+    const formValue = this.form.getRawValue();
+    const procesar = () => this.procesarReserva();
 
+    if (formValue.sincronizado) {
+      this.googleAuthService.checkTokenStatus().subscribe((tokenPresente) => {
+        if (tokenPresente) {
+          procesar();
+        } else {
+          const popup = window.open(
+            `${environment.apiUrl}/api/google/auth`,
+            '_blank'
+          );
+
+          const espera = setInterval(() => {
+            if (popup?.closed) {
+              clearInterval(espera);
+              this.googleAuthService.checkTokenStatus().subscribe((valido) => {
+                if (valido) procesar();
+                else
+                  this.toastr.error(
+                    `
+                    <div class="toast-content">
+                      <div class="toast-title">Autenticación Google Calendar</div>
+                      <div class="toast-message">
+                         No se pudo autenticar con Google.
+                      </div>
+                    </div>
+                  `,
+                    '',
+                    {
+                      enableHtml: true,
+                      toastClass: 'ngx-toastr custom-toast toast-info',
+                      closeButton: true,
+                      timeOut: 3000,
+                    }
+                  );
+              });
+            }
+          }, 1000);
+        }
+      });
+    } else {
+      procesar();
+    }
+  }
+
+  procesarReserva(): void {
     const formValue = this.form.getRawValue();
     const idUsuario = formValue.idUsuario;
     const idEspacio = +formValue.idEspacio;
     const idEstado = formValue.idEstado;
 
     const espacio = this.espacios.find((e) => e.idEspacio === idEspacio);
-
-    // Validación de capacidad
     if (espacio && formValue.numeroOcupantes > espacio.capacidad) {
       this.toastr.info(
-        `              
+        `
           <div class="toast-content">
-            <div class="toast-title">Ocupantes excedidos</div>
+            <div class="toast-title">Capacidad del Espacio</div>
             <div class="toast-message">
-               La sala solo admite hasta ${espacio.capacidad} personas,
+               Solo se permiten hasta <strong>${espacio.capacidad}</strong> personas en este espacio.
             </div>
           </div>
         `,
@@ -298,10 +357,9 @@ export class MisReservasFormComponent implements OnInit {
           enableHtml: true,
           toastClass: 'ngx-toastr custom-toast toast-info',
           closeButton: true,
-          timeOut: 4000,
+          timeOut: 3000,
         }
       );
-
       return;
     }
 
@@ -314,10 +372,9 @@ export class MisReservasFormComponent implements OnInit {
       formValue.horaFin
     );
 
-    // Validación de solapamiento
     this.reservaService
       .verificarDisponibilidad({
-        idEspacio: idEspacio,
+        idEspacio,
         inicio: fechaInicio,
         fin: fechaFin,
       })
@@ -325,11 +382,11 @@ export class MisReservasFormComponent implements OnInit {
         next: (disponible) => {
           if (!disponible) {
             this.toastr.info(
-              `              
+              `
                 <div class="toast-content">
-                  <div class="toast-title">Conflicto de horario</div>
+                  <div class="toast-title">Reserva</div>
                   <div class="toast-message">
-                    Ya existe una reserva para esta sala en ese rango de fechas.
+                    Ya existe una reserva en ese espacio para ese horario. Elige otro momento disponible.
                   </div>
                 </div>
               `,
@@ -338,14 +395,13 @@ export class MisReservasFormComponent implements OnInit {
                 enableHtml: true,
                 toastClass: 'ngx-toastr custom-toast toast-info',
                 closeButton: true,
-                timeOut: 4000,
+                timeOut: 3000,
               }
             );
 
             return;
           }
 
-          // Si no hay conflicto, proceder con la reserva
           forkJoin({
             usuario: this.usuarioService.getUsuarioById(idUsuario),
             espacio: this.espacioService.getEspacioById(idEspacio),
@@ -367,34 +423,35 @@ export class MisReservasFormComponent implements OnInit {
               ? this.reservaService.updateReserva(this.idReserva!, reserva)
               : this.reservaService.createReserva(reserva);
 
-            this.toastr.info(
-              `              
+            obs.subscribe(() => {
+              this.toastr.success(
+                `
                   <div class="toast-content">
-                    <div class="toast-title">Creación de Reserva</div>
+                    <div class="toast-title">Reserva</div>
                     <div class="toast-message">
-                      La reserva se ha creado correctamente.
+                      Reserva registrada correctamente.
                     </div>
                   </div>
                 `,
-              '',
-              {
-                enableHtml: true,
-                toastClass: 'ngx-toastr custom-toast toast-info',
-                closeButton: true,
-                timeOut: 2000,
-              }
-            );
-
-            obs.subscribe(() => this.router.navigate(['/misreservas']));
+                '',
+                {
+                  enableHtml: true,
+                  toastClass: 'ngx-toastr custom-toast toast-info',
+                  closeButton: true,
+                  timeOut: 3000,
+                }
+              );
+              this.router.navigateByUrl(this.returnTo);
+            });
           });
         },
         error: () => {
           this.toastr.error(
-            `              
+            `
               <div class="toast-content">
-                <div class="toast-title">Error de Servidor</div>
+                <div class="toast-title">Reserva</div>
                 <div class="toast-message">
-                  Error al comprobar disponibilidad de la sala.
+                  Error al verificar disponibilidad.
                 </div>
               </div>
             `,
@@ -403,7 +460,7 @@ export class MisReservasFormComponent implements OnInit {
               enableHtml: true,
               toastClass: 'ngx-toastr custom-toast toast-info',
               closeButton: true,
-              timeOut: 4000,
+              timeOut: 3000,
             }
           );
         },
@@ -421,5 +478,20 @@ export class MisReservasFormComponent implements OnInit {
   getDescripcionEstado(idEstado: number): string {
     const estado = this.estados.find((e) => e.idEstado === idEstado);
     return estado ? estado.descripcion : 'Pendiente';
+  }
+
+  cancelarReserva(): void {
+    this.router.navigateByUrl(this.returnTo);
+  }
+
+  preRellenarFechas(fecha: Date): void {
+    const fechaStr = fecha.toISOString().split('T')[0]; // formato yyyy-MM-dd
+
+    this.form.patchValue({
+      fechaInicio: fechaStr,
+      //horaInicio: '09:00',
+      fechaFin: fechaStr,
+      //horaFin: '10:00',
+    });
   }
 }

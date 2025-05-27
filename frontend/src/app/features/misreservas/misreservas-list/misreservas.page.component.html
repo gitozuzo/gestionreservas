@@ -1,4 +1,4 @@
-<div class="container py-4">
+<div class="container py-2">
   <h2
     class="mb-4 fw-semibold text-dark text-center"
     style="font-family: 'Segoe UI', sans-serif; letter-spacing: 0.5px"
@@ -6,12 +6,11 @@
     <i class="bi bi-calendar-check fs-3 text-primary"></i> Mis Reservas
   </h2>
 
-  <!-- Barra de búsqueda y botón de filtros -->
-  <div
-    class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3 gap-2"
-  >
-    <div class="d-flex flex-grow-1 gap-2">
-      <div class="input-group flex-grow-1" style="height: 42px">
+  <!-- Barra de búsqueda y botones -->
+  <div class="row gy-2 gx-2 align-items-stretch mb-3">
+    <!-- Buscador -->
+    <div class="col-12 col-md">
+      <div class="input-group h-100">
         <span class="input-group-text bg-white">
           <i class="bi bi-search"></i>
         </span>
@@ -23,10 +22,12 @@
           (input)="aplicarFiltro()"
         />
       </div>
+    </div>
 
+    <!-- Botón Filtros -->
+    <div class="col-6 col-md-auto">
       <button
-        class="btn btn-outline-secondary d-flex align-items-center px-3"
-        style="height: 42px"
+        class="btn btn-outline-secondary w-100 h-100 d-flex align-items-center justify-content-center px-3"
         (click)="mostrarFiltros = !mostrarFiltros"
       >
         <i class="bi bi-funnel me-1"></i> Filtros
@@ -34,17 +35,21 @@
         <i class="bi bi-chevron-up ms-2" *ngIf="mostrarFiltros"></i>
       </button>
     </div>
-    <!-- Botón de nueva reserva -->
-    <button
-      class="btn btn-primary"
-      [routerLink]="['/misreservas/nueva']"
-      type="button"
-    >
-      <i class="bi bi-plus-lg me-1"></i> Nueva reserva
-    </button>
+
+    <!-- Botón Nueva reserva -->
+    <div class="col-6 col-md-auto">
+      <button
+        class="btn btn-primary w-100 h-100 d-flex align-items-center justify-content-center px-3"
+        [routerLink]="['/misreservas/nueva']"
+        [queryParams]="{ returnTo: '/misreservas' }"
+        type="button"
+      >
+        <i class="bi bi-plus-lg me-1"></i> Nueva reserva
+      </button>
+    </div>
   </div>
 
-  <!-- Panel de filtros adicionales -->
+  <!-- Filtros adicionales -->
   <div *ngIf="mostrarFiltros" class="card p-4 mb-4 shadow-sm">
     <div class="row g-3 align-items-end">
       <!-- Nombre de usuario -->
@@ -60,6 +65,7 @@
           (input)="aplicarFiltro()"
         />
       </div>
+
       <!-- Estado -->
       <div class="col-md-4">
         <label class="form-label fw-normal text-secondary">Estado</label>
@@ -136,7 +142,7 @@
         />
       </div>
 
-      <!-- Fecha desde -->
+      <!-- Fechas -->
       <div class="col-md-3">
         <label class="form-label fw-normal text-secondary">Fecha desde</label>
         <input
@@ -147,7 +153,6 @@
         />
       </div>
 
-      <!-- Fecha hasta -->
       <div class="col-md-3">
         <label class="form-label fw-normal text-secondary">Fecha hasta</label>
         <input
@@ -159,59 +164,80 @@
       </div>
     </div>
 
-    <!-- Botones -->
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+    <!-- Botones filtros -->
+    <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+      <button class="btn btn-outline-secondary px-4" (click)="limpiarFiltros()">
         Limpiar
       </button>
-      <button class="btn btn-primary" (click)="aplicarFiltro()">Aplicar</button>
+      <button class="btn btn-primary px-4" (click)="aplicarFiltro()">
+        Aplicar
+      </button>
     </div>
   </div>
 
-  <div class="row gy-4">
-    <div class="col-md-4" *ngFor="let reserva of reservasPaginadas">
+  <!-- Mensaje si no hay reservas -->
+  <div
+    *ngIf="!cargando && reservas.length === 0"
+    class="text-center text-muted py-5 w-100"
+  >
+    <i class="bi bi-info-circle fs-1 mb-3 d-block"></i>
+    <p class="mb-0">No tienes reservas registradas.</p>
+    <p class="small">
+      Puedes crear una nueva reserva usando el botón "Nueva reserva".
+    </p>
+  </div>
+
+  <!-- Si hay reservas pero los filtros no coinciden -->
+  <div
+    *ngIf="!cargando && reservas.length > 0 && reservasPaginadas.length === 0"
+    class="text-center text-muted py-5 w-100"
+  >
+    <i class="bi bi-search fs-1 mb-3 d-block"></i>
+    <p class="mb-0">No se encontraron reservas con los filtros aplicados.</p>
+    <p class="small">
+      Intenta ajustar los filtros o eliminar alguno para ver más resultados.
+    </p>
+  </div>
+
+  <!-- Tarjetas -->
+  <div *ngIf="reservasPaginadas.length > 0" class="row gy-4">
+    <div
+      class="col-12 col-sm-6 col-md-4"
+      *ngFor="let reserva of reservasPaginadas"
+    >
       <div
         class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-card"
       >
-        <!-- Badge de estado -->
         <span
           class="position-absolute top-0 end-0 m-2 badge rounded-pill px-3 py-1 fw-normal"
-          [ngClass]="{
-            'estado-pendiente': reserva.estado.descripcion === 'Pendiente',
-            'estado-confirmada': reserva.estado.descripcion === 'Confirmada',
-            'estado-completada': reserva.estado.descripcion === 'Completada',
-            'estado-cancelada': reserva.estado.descripcion === 'Cancelada',
-            'estado-no-utilizada': reserva.estado.descripcion === 'No utilizada'
-          }"
+          [style.backgroundColor]="reserva.estado.bgcolor"
+          [style.color]="reserva.estado.color"
         >
           {{ reserva.estado.descripcion }}
         </span>
 
-        <!-- Imagen -->
         <img
           [src]="getImagenUrl(reserva.espacio.imagen)"
-          class="card-img-top"
+          class="card-img-top object-fit-cover"
+          style="max-height: 200px"
           [alt]="reserva.espacio.nombre"
-          style="height: 200px; object-fit: cover"
         />
 
         <div class="card-body pb-2 position-relative">
-          <!-- Título -->
           <div class="mb-2 pe-4">
-            <!-- Padding end para evitar superposición con icono -->
             <h6 class="fw-semibold text-muted mb-1">
               {{ reserva.espacio.nombre }}
             </h6>
-            <small class="text-secondary">
-              {{ reserva.espacio.tipo.descripcion }} • Capacidad:
-              {{ reserva.espacio.capacidad }} personas
-            </small>
-            <small class="text-muted d-block">
-              Reserva #{{ reserva.idReserva }} - {{ reserva.usuario.nombre }}
-            </small>
+            <small class="text-secondary"
+              >{{ reserva.espacio.tipo.descripcion }} • Capacidad:
+              {{ reserva.espacio.capacidad }} personas</small
+            >
+            <small class="text-muted d-block"
+              >Reserva #{{ reserva.idReserva }} -
+              {{ reserva.usuario.nombre }}</small
+            >
           </div>
 
-          <!-- Icono de comentario -->
           <div
             *ngIf="reserva.estado.descripcion === 'Completada'"
             class="position-absolute top-0 end-0 mt-2 me-2"
@@ -220,18 +246,14 @@
           >
             <div class="comentario-icon-wrapper">
               <i class="bi fs-5 bi-chat-left-text text-primary"></i>
-
-              <!-- Badge rojo -->
               <span
                 *ngIf="tieneComentarios(reserva.idReserva!)"
                 class="comentario-badge bg-danger text-white"
+                >{{ obtenerCantidadComentarios(reserva.idReserva!) }}</span
               >
-                {{ obtenerCantidadComentarios(reserva.idReserva!) }}
-              </span>
             </div>
           </div>
 
-          <!-- Fecha y ubicación -->
           <p class="mb-1 text-secondary small">
             <i class="bi bi-calendar me-1"></i>
             {{ reserva.fechaInicio | date : "longDate" }}
@@ -242,14 +264,14 @@
             {{ reserva.fechaFin | date : "HH:mm" }}
           </p>
           <p class="mb-0 text-secondary small">
-            <i class="bi bi-geo-alt me-1"></i>
-            {{ reserva.espacio.ubicacion }}
+            <i class="bi bi-geo-alt me-1"></i> {{ reserva.espacio.ubicacion }}
           </p>
 
           <hr class="my-3" />
 
-          <!-- Acciones -->
-          <div class="d-flex justify-content-between px-1 text-sm">
+          <div
+            class="d-flex justify-content-between px-1 text-sm flex-wrap gap-2"
+          >
             <span
               *ngIf="reserva.estado.descripcion === 'Pendiente'"
               class="text-danger-soft small fw-normal d-flex align-items-center hover-cancel"
@@ -258,7 +280,6 @@
             >
               <i class="bi bi-x-circle me-1"></i> Cancelar
             </span>
-
             <span
               *ngIf="reserva.estado.descripcion === 'Pendiente'"
               class="text-success small fw-normal d-flex align-items-center hover-confirm"
@@ -267,7 +288,6 @@
             >
               <i class="bi bi-check2-circle me-1"></i> Confirmar
             </span>
-
             <span
               *ngIf="
                 ['Completada', 'Cancelada', 'No utilizada'].includes(
@@ -283,27 +303,20 @@
           </div>
         </div>
       </div>
-      <div
-        *ngIf="reservasPaginadas.length === 0"
-        class="text-center text-muted py-5 w-100"
-      >
-        <i class="bi bi-info-circle me-2"></i>
-        No se encontraron reservas con los filtros aplicados.
-      </div>
     </div>
 
     <!-- Paginación -->
     <div
-      class="d-flex justify-content-between align-items-center mt-4 small text-muted"
+      class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 small text-muted gap-2"
     >
       <div>
         Mostrando {{ rangoInicio + 1 }} -
         {{ rangoFin > totalReservas ? totalReservas : rangoFin }} de
         {{ totalReservas }} resultados
       </div>
-      <div>
+      <div class="d-flex gap-2">
         <button
-          class="btn btn-outline-secondary btn-sm me-2"
+          class="btn btn-outline-secondary btn-sm"
           (click)="paginaAnterior()"
           [disabled]="paginaActual === 0"
         >
@@ -320,6 +333,7 @@
     </div>
   </div>
 
+  <!-- Modal de comentarios -->
   <div
     class="modal fade"
     id="comentarioModal"
@@ -349,7 +363,6 @@
         </div>
 
         <div class="modal-body px-4 pt-2 pb-0">
-          <!-- Valoración -->
           <div class="mb-4 text-center">
             <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
               <i
@@ -364,7 +377,6 @@
             </ng-container>
           </div>
 
-          <!-- Comentario -->
           <div class="form-floating">
             <textarea
               class="form-control"
@@ -407,6 +419,7 @@
     </div>
   </div>
 
+  <!-- Modal de confirmación -->
   <app-confirm-modal
     [modalId]="modalConfig.modalId"
     [type]="modalConfig.type"
@@ -421,5 +434,6 @@
         : confirmarReservaConfirmada()
     "
     (onCancel)="reservaPendiente = null"
-  ></app-confirm-modal>
+  >
+  </app-confirm-modal>
 </div>

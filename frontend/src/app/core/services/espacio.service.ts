@@ -26,6 +26,10 @@ export class EspacioService {
     return this.http.put<Espacio>(`${this.apiUrl}/${id}`, formData);
   }
 
+  updateEspacioEstado(id: number, idEstado: number) {
+    return this.http.patch(`${this.apiUrl}/${id}/estado`, { idEstado });
+  }
+
   deleteEspacio(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

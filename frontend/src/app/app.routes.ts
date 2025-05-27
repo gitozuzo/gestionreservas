@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin.guard';
+import { anyRoleGuard } from './core/auth/any-role.guard';
 import { empleadoGuard } from './core/auth/empleado.guard';
 
 export const routes: Routes = [
@@ -84,33 +85,17 @@ export const routes: Routes = [
       },
 
       {
-        path: 'reservas',
+        path: 'espacios-comentarios',
         canActivate: [empleadoGuard],
         loadComponent: () =>
           import(
-            './features/reservas/reserva-list/reservas.page.component'
-          ).then((m) => m.ReservasPageComponent),
-      },
-      {
-        path: 'reservas/nueva',
-        canActivate: [empleadoGuard],
-        loadComponent: () =>
-          import(
-            './features/reservas/reserva-form/reserva.form.component'
-          ).then((m) => m.ReservaFormComponent),
-      },
-      {
-        path: 'reservas/editar/:id',
-        canActivate: [empleadoGuard],
-        loadComponent: () =>
-          import(
-            './features/reservas/reserva-form/reserva.form.component'
-          ).then((m) => m.ReservaFormComponent),
+            './features/espacioscomentarios/espacioscomentarios.component'
+          ).then((m) => m.EspaciosComentariosComponent),
       },
 
       {
         path: 'calendario-reservas',
-        canActivate: [empleadoGuard], // o adminGuard, según lo necesites
+        canActivate: [anyRoleGuard],
         loadComponent: () =>
           import(
             './features/calendarioreservas/calendario-reservas.component'
@@ -128,7 +113,7 @@ export const routes: Routes = [
 
       {
         path: 'misreservas/nueva',
-        canActivate: [empleadoGuard],
+        canActivate: [anyRoleGuard],
         loadComponent: () =>
           import(
             './features/misreservas/misreservas-form/misreservas.form.component'

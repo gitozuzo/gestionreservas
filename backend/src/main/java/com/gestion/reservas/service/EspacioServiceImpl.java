@@ -220,6 +220,17 @@ public class EspacioServiceImpl implements EspacioService {
         return dto;
     }
 
+    public void updateEstado(Long idEspacio, Long idEstado) {
+        Espacio espacio = espacioRepo.findById(idEspacio)
+                .orElseThrow(() -> new NoSuchElementException("Espacio no encontrado"));
+
+        EstadoEspacio nuevoEstado = estadoRepo.findById(idEstado)
+                .orElseThrow(() -> new NoSuchElementException("Estado no encontrado"));
+
+        espacio.setEstado(nuevoEstado);
+        espacioRepo.save(espacio);
+    }
+
 
 }
 

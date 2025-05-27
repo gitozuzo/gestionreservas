@@ -21,14 +21,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    System.out.println("❌ Usuario no encontrado para el email: " + email);
-                    return new UsernameNotFoundException("Usuario no encontrado con email: " + email);
+                  return new UsernameNotFoundException("Usuario no encontrado con email: " + email);
                 });
 
         return User.builder()
                 .username(usuario.getEmail())
                 .password(usuario.getPassword())
-                .roles(usuario.getRol().getDescripcion())  // Asegúrate de que el rol está en formato aceptable por Spring
+                .roles(usuario.getRol().getDescripcion())
                 .build();
     }
 

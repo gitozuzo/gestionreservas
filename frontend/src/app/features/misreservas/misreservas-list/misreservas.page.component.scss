@@ -7,33 +7,6 @@
   opacity: 1;
 }
 
-/* Badge de estado por tipo */
-.estado-pendiente {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.estado-confirmada {
-  background-color: #d1e7dd;
-  color: #0f5132;
-}
-
-.estado-completada {
-  background-color: #e0dcfc;
-  color: #4b2990;
-}
-
-.estado-cancelada {
-  background-color: #f8d7da;
-  color: #842029;
-}
-
-.estado-no-utilizada {
-  background-color: #e3f2fd;
-  color: #1565c0;
-}
-
-/* Hover efectos en acciones: solo cambio de color, sin animaciones */
 .hover-confirm {
   cursor: pointer;
   color: #198754;
@@ -65,7 +38,6 @@
   text-decoration: none;
 }
 
-/* Comentario icono */
 .hover-comment {
   background-color: transparent;
 }
@@ -78,7 +50,6 @@
   color: inherit;
 }
 
-/* Utilidades */
 .text-purple {
   color: #7b61ff;
 }
@@ -87,42 +58,38 @@
   background-color: #f3efff;
 }
 
-/*modal comentarios*/
+#comentarioModal .modal-content {
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+}
 
-#comentarioModal {
-  .modal-content {
-    background-color: #fff;
-    transition: all 0.2s ease-in-out;
-  }
+#comentarioModal .modal-header {
+  border-bottom: none;
+}
 
-  .modal-header {
-    border-bottom: none;
-  }
+#comentarioModal .modal-title {
+  font-size: 1.2rem;
+}
 
-  .modal-title {
-    font-size: 1.2rem;
-  }
+#comentarioModal .form-floating textarea {
+  font-size: 0.95rem;
+}
 
-  .form-floating textarea {
-    font-size: 0.95rem;
-  }
+#comentarioModal .btn-primary {
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+}
 
-  .btn-primary {
-    padding: 0.5rem 1.5rem;
-    font-weight: 500;
-  }
+#comentarioModal .btn-outline-secondary {
+  padding: 0.5rem 1.5rem;
+}
 
-  .btn-outline-secondary {
-    padding: 0.5rem 1.5rem;
-  }
-
-  .modal-footer {
-    border-top: none;
-  }
+#comentarioModal .modal-footer {
+  border-top: none;
 }
 
 .comentario-icon-wrapper {
-  background-color: #e0f0ff; // azul claro
+  background-color: #e0f0ff;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -131,22 +98,38 @@
   justify-content: center;
   position: relative;
   transition: transform 0.2s ease;
+}
 
-  &:hover {
-    transform: scale(1.05);
+.comentario-icon-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.comentario-icon-wrapper i {
+  font-size: 1.2rem;
+}
+
+.comentario-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+@media (max-width: 576px) {
+  .comentario-icon-wrapper {
+    width: 32px;
+    height: 32px;
   }
 
-  i {
-    font-size: 1.2rem;
+  .comentario-icon-wrapper i {
+    font-size: 1rem;
   }
 
   .comentario-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    font-size: 0.65rem;
-    padding: 2px 5px;
-    border-radius: 999px;
-    line-height: 1;
+    font-size: 0.55rem;
+    padding: 1px 4px;
   }
 }

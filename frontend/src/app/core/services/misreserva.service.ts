@@ -47,4 +47,8 @@ export class MisReservaService {
   }): Observable<boolean> {
     return this.http.post<boolean>(`${this.apiUrl}/disponible`, body);
   }
+
+  getReservasPorUsuario(idUsuario: number): Observable<MisReserva[]> {
+    return this.http.get<MisReserva[]>(`${this.apiUrl}/usuario/${idUsuario}`);
+  }
 }

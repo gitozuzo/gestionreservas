@@ -22,4 +22,5 @@ public class MisReservasDTO {
     private boolean sincronizado;
     private int ocupantes;
     private boolean recomendadaia;
+    private String eventid;
 }

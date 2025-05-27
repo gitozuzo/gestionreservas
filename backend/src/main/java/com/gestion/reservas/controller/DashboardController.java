@@ -23,7 +23,7 @@ public class DashboardController {
             @RequestParam(required = false) Long tipoSala,
             @RequestParam(required = false) Long estado
     ) {
-        System.out.println("******entra en el controlador****");
+
         return dashboardService.obtenerDatosDashboard(fechaInicio, fechaFin, tipoSala, estado);
     }
 }

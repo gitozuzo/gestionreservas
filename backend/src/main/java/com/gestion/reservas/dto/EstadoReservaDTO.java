@@ -8,5 +8,7 @@ import lombok.Data;
 public class EstadoReservaDTO {
     private Long idEstado;
     private String descripcion;
+    private String color;
+    private String bgcolor;
 }
 

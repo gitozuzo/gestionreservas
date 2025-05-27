@@ -3,19 +3,25 @@ package com.gestion.reservas.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gestion.reservas.dto.RecomendacionResponseDTO;
 import com.gestion.reservas.service.RecomendadorService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class RecomendadorServiceImpl implements RecomendadorService {
+
+    private final Environment env;
 
     @Override
     public RecomendacionResponseDTO obtenerRecomendaciones(Long usuarioId, int diaSemana, int hora) throws Exception {
-        String scriptPath = "ml/predictor.py";
+        String scriptPath = env.getProperty("python.script.predictor");
         System.out.println("Working dir: " + System.getProperty("user.dir"));
 
         ProcessBuilder pb = new ProcessBuilder(
@@ -25,7 +31,16 @@ public class RecomendadorServiceImpl implements RecomendadorService {
                 String.valueOf(hora)
         );
 
+
         pb.directory(new File(System.getProperty("user.dir")));
+
+        Map<String, String> envs = pb.environment();
+        envs.put("DB_HOST", env.getProperty("python.db.host"));
+        envs.put("DB_PORT", env.getProperty("python.db.port"));
+        envs.put("DB_NAME", env.getProperty("python.db.name"));
+        envs.put("DB_USER", env.getProperty("python.db.user"));
+        envs.put("DB_PASSWORD", env.getProperty("python.db.password"));
+
         Process process = pb.start();
 
         // Salida estándar (stdout)
@@ -38,6 +53,7 @@ public class RecomendadorServiceImpl implements RecomendadorService {
             output.append(line).append("\n");
         }
 
+
         // Salida de errores (stderr)
         BufferedReader errorReader = new BufferedReader(
                 new InputStreamReader(process.getErrorStream())
@@ -48,6 +64,7 @@ public class RecomendadorServiceImpl implements RecomendadorService {
             errorOutput.append(errorLine).append("\n");
         }
 
+
         // Esperamos a que termine el proceso
         int exitCode = process.waitFor();
 
@@ -57,19 +74,26 @@ public class RecomendadorServiceImpl implements RecomendadorService {
             throw new RuntimeException("Error al ejecutar predictor.py:\n" + errorOutput);
         }
 
-        // Parseamos el JSON de salida del script a objeto Java
+         // Parseamos el JSON de salida del script a objeto Java
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(output.toString().trim(), RecomendacionResponseDTO.class);
+         return mapper.readValue(output.toString().trim(), RecomendacionResponseDTO.class);
     }
 
     @Override
     public String entrenarModelo() throws Exception {
-        String scriptPath = "ml/modelo_recomendador.py";
+        String scriptPath = env.getProperty("python.script.modelo");
         System.out.println("Working dir: " + System.getProperty("user.dir"));
 
         // Creamos el proceso
         ProcessBuilder pb = new ProcessBuilder("python", scriptPath);
         pb.directory(new File(System.getProperty("user.dir")));
+
+        Map<String, String> envs = pb.environment();
+        envs.put("DB_HOST", env.getProperty("python.db.host"));
+        envs.put("DB_PORT", env.getProperty("python.db.port"));
+        envs.put("DB_NAME", env.getProperty("python.db.name"));
+        envs.put("DB_USER", env.getProperty("python.db.user"));
+        envs.put("DB_PASSWORD", env.getProperty("python.db.password"));
 
         Process process = pb.start();
 
@@ -103,8 +127,8 @@ public class RecomendadorServiceImpl implements RecomendadorService {
         return output.toString().trim();
     }
 
-    //@Scheduled(cron = "0 */2 * * * *") // cada 2 minutos
-    @Scheduled(cron = "0 0 2 * * *") // 2:00:00 todos los días
+    @Scheduled(cron = "0 */2 * * * *") // cada 2 minutos pruebas
+    //@Scheduled(cron = "0 0 2 * * *") // 2:00:00 todos los días
     public void reentrenarAutomáticamente() {
         try {
             System.out.println("[SCHEDULED] Entrenamiento automático iniciado");

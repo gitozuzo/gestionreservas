@@ -12,4 +12,5 @@ export interface MisReserva {
   sincronizado: boolean;
   ocupantes: number;
   recomendadaia: boolean;
+  eventid?: String;
 }

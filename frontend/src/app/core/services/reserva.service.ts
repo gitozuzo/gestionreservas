@@ -33,9 +33,9 @@ export class ReservaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getCalendario(mes: number, anio: number): Observable<ReservaCalendario[]> {
+  getCalendario(desde: string, hasta: string): Observable<ReservaCalendario[]> {
     return this.http.get<ReservaCalendario[]>(
-      `${this.apiUrl}/calendario?mes=${mes}&anio=${anio}`
+      `${this.apiUrl}/calendario?desde=${desde}&hasta=${hasta}`
     );
   }
 }

@@ -21,10 +21,20 @@ export class AuthService {
         }),
         catchError((error) => {
           console.error('Error en login:', error);
-          return throwError(
-            () =>
-              new Error('Credenciales incorrectas o servidor no disponible.')
-          );
+
+          let mensaje = 'Servidor no disponible.';
+
+          if (error.status === 403 || error.status === 401) {
+            if (
+              error.error &&
+              typeof error.error === 'object' &&
+              error.error.message
+            ) {
+              mensaje = error.error.message;
+            }
+          }
+
+          return throwError(() => new Error(mensaje));
         })
       );
   }

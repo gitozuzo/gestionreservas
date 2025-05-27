@@ -29,56 +29,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println(" Método: " + request.getMethod() + " | URI: " + request.getRequestURI());
 
         String authHeader = request.getHeader("Authorization");
         String jwt = null;
 
-        // Obtener token JWT del header o parámetro
+        // Obtenemos token JWT del header o parámetro
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
         } else if (request.getParameter("token") != null) {
             jwt = request.getParameter("token");
         }
 
-        // Si no hay token, seguir sin autenticar
+        // Si no hay token, seguimos sin autenticar
         if (jwt == null) {
-            System.out.println("No se proporcionó token. Continuando como anónimo.");
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            System.out.println(" Token recibido. Intentando autenticar...");
-
 
             Long idUsuario = jwtService.extractIdUsuario(jwt);
 
             if (idUsuario == null) {
-                System.out.println("No se pudo extraer el ID del usuario desde el token.");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido o expirado.");
+                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido o expirado.");
                 return;
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                System.out.println("Usuario ya autenticado en el contexto.");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Cargar usuario desde DB
+            // Cargamos usuario desde DB
             UserDetails userDetails = userDetailsService.loadUserById(idUsuario);
-            System.out.println("Usuario cargado: " + userDetails.getUsername());
-            System.out.println("Roles: " + userDetails.getAuthorities());
 
-            // Validar el token contra los datos del usuario
+            // Validamos el token contra los datos del usuario
             if (!jwtService.isTokenValid(jwt, userDetails)) {
-                System.out.println("Token no válido para este usuario.");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido.");
+               response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido.");
                 return;
             }
 
-            // Crear el token de autenticación de Spring
+            // Creamos el token de autenticación de Spring
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -88,8 +79,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            System.out.println("Autenticación exitosa.");
 
         } catch (Exception e) {
             System.out.println("Error durante la autenticación: " + e.getMessage());

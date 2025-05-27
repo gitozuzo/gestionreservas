@@ -1,16 +1,16 @@
 <div class="container py-4">
-  <h2 class="mb-2">Reserva de Espacios de Trabajo</h2>
-  <p class="text-muted mb-4">
+  <h2 class="mb-2 text-center text-lg-start">Reserva de Espacios de Trabajo</h2>
+  <p class="text-muted mb-4 text-center text-lg-start">
     Sistema inteligente de reservas con recomendaciones personalizadas
   </p>
 
-  <div class="row flex-lg-nowrap align-items-stretch">
+  <div class="row gy-4 flex-lg-nowrap align-items-stretch">
     <!-- Formulario de Reserva -->
-    <div class="col-lg-8 col-md-12">
+    <div class="col-lg-8 col-12">
       <form
         [formGroup]="form"
         (ngSubmit)="guardar()"
-        class="card p-4 shadow-sm"
+        class="card p-4 shadow-sm h-100"
       >
         <!-- Usuario -->
         <div class="mb-3">
@@ -66,7 +66,7 @@
 
         <!-- Fechas y Horas -->
         <div class="row">
-          <div class="col-md-6 mb-3">
+          <div class="col-sm-6 mb-3">
             <label class="form-label">Fecha de inicio</label>
             <input
               type="date"
@@ -74,7 +74,7 @@
               formControlName="fechaInicio"
             />
           </div>
-          <div class="col-md-6 mb-3">
+          <div class="col-sm-6 mb-3">
             <label class="form-label">Hora de inicio</label>
             <input
               type="time"
@@ -85,7 +85,7 @@
         </div>
 
         <div class="row">
-          <div class="col-md-6 mb-3">
+          <div class="col-sm-6 mb-3">
             <label class="form-label">Fecha de finalización</label>
             <input
               type="date"
@@ -93,7 +93,7 @@
               formControlName="fechaFin"
             />
           </div>
-          <div class="col-md-6 mb-3">
+          <div class="col-sm-6 mb-3">
             <label class="form-label">Hora de finalización</label>
             <input type="time" class="form-control" formControlName="horaFin" />
           </div>
@@ -110,8 +110,8 @@
           />
         </div>
 
-        <!-- Sincronizado -->
-        <div class="form-check mb-3">
+        <!-- Checkboxes -->
+        <div class="form-check mb-2">
           <input
             type="checkbox"
             class="form-check-input"
@@ -120,7 +120,7 @@
           <label class="form-check-label">Sincronizado con calendario</label>
         </div>
 
-        <div class="form-check mb-3">
+        <div class="form-check mb-4">
           <input
             type="checkbox"
             class="form-check-input"
@@ -131,13 +131,17 @@
         </div>
 
         <!-- Botones -->
-        <div class="d-flex justify-content-end gap-2">
-          <a class="btn btn-outline-secondary" [routerLink]="['/misreservas']"
-            >Cancelar</a
+        <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-3">
+          <button
+            class="btn btn-outline-secondary btn-auto-width"
+            type="button"
+            (click)="cancelarReserva()"
           >
+            Cancelar
+          </button>
           <button
             type="submit"
-            class="btn btn-primary"
+            class="btn btn-primary btn-auto-width"
             [disabled]="form.invalid"
           >
             Confirmar reserva
@@ -147,9 +151,9 @@
     </div>
 
     <!-- Recomendaciones IA -->
-    <div class="col-lg-4 col-md-12 mt-4 mt-lg-0 recomendaciones-ia">
-      <div class="card shadow-sm">
-        <div class="card-header">
+    <div class="col-lg-4 col-12">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
           <span class="text-muted fw-semibold">Recomendaciones IA</span>
         </div>
         <div class="card-body">

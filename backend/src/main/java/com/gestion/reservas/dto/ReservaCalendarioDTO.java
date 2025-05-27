@@ -5,15 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservaCalendarioDTO {
+public class ReservaCalendarioDTO{
     private Long idReserva;
-    private LocalDate fecha;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
     private String sala;
     private String usuario;
     private String estado;
     private String color;
+    private String bgcolor;
+    private String tipo;
 }

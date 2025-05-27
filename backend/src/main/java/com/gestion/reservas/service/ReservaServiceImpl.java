@@ -86,7 +86,8 @@ public class ReservaServiceImpl implements ReservaService {
                 reserva.getFechaFin(),
                 reserva.getSincronizado(),
                 reserva.getOcupantes(),
-                reserva.getRecomendadaia()
+                reserva.getRecomendadaia(),
+                reserva.getEventid()
         );
     }
 
@@ -101,34 +102,27 @@ public class ReservaServiceImpl implements ReservaService {
         reserva.setSincronizado(dto.getSincronizado());
         reserva.setOcupantes(dto.getOcupantes());
         reserva.setRecomendadaia(dto.getRecomendadaia());
+        reserva.setEventid(dto.getEventid());
         return reserva;
     }
 
     @Override
-    public List<ReservaCalendarioDTO> obtenerReservasDelMes(int mes, int anio) {
-        LocalDateTime inicio = LocalDate.of(anio, mes, 1).atStartOfDay();
-        LocalDateTime fin = inicio.plusMonths(1).minusSeconds(1);
-
-        List<Reserva> reservas = reservaRepository.findByFechaInicioBetween(inicio, fin);
+    public List<ReservaCalendarioDTO> obtenerReservasEntreFechas(LocalDateTime desde, LocalDateTime hasta) {
+        List<Reserva> reservas = reservaRepository.findByFechaInicioBetween(desde, hasta);
 
         return reservas.stream().map(r -> new ReservaCalendarioDTO(
                 r.getIdReserva(),
-                r.getFechaInicio().toLocalDate(),
+                r.getFechaInicio(),
+                r.getFechaFin(),
                 r.getEspacio().getNombre(),
                 r.getUsuario().getNombre(),
                 r.getEstado().getDescripcion(),
-                colorPorEstado(r.getEstado().getDescripcion())
-        )).toList();
+                r.getEstado().getColor(),
+                r.getEstado().getBgcolor(),
+                r.getEspacio().getTipoEspacio().getDescripcion()
+                    )).toList();
     }
 
-    private String colorPorEstado(String estado) {
-        return switch (estado.toLowerCase()) {
-            case "Confirmada" -> "#d1e7dd";
-            case "Pendiente"  -> "#fff3cd";
-            case "Completada" -> "#e0dcfc";
-            case "Cancelada"  -> "#f8d7da";
-            default -> "#e3f2fd";
-        };
-    }
+
 }
 

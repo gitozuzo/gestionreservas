@@ -13,7 +13,9 @@ import com.gestion.reservas.repository.ReservaRepository;
 import com.gestion.reservas.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +33,7 @@ public class MisReservasServiceImpl implements MisReservasService {
     private final EstadoReservaRepository estadoReservaRepository;
     private final NotificacionService notificacionService;
     private final MisReservasMapper mapper;
+    private final GoogleCalendarService googleCalendarService;
 
     @Override
     public List<MisReservasDTO> findAll() {
@@ -47,6 +50,14 @@ public class MisReservasServiceImpl implements MisReservasService {
     }
 
     @Override
+    public List<MisReservasDTO> obtenerReservasPorUsuario(Long idUsuario) {
+        List<Reserva> reservas = reservaRepository.findByUsuarioIdUsuario(idUsuario);
+        return reservas.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public MisReservasDTO save(MisReservasDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getUsuario().getIdUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
@@ -58,6 +69,14 @@ public class MisReservasServiceImpl implements MisReservasService {
                 .orElseThrow(() -> new IllegalArgumentException("Estado no encontrado"));
 
         Reserva reserva = mapper.toEntity(dto, usuario, espacio, estado);
+
+        // Sincronizar con Google Calendar antes de guardar si está activado
+        if (dto.isSincronizado()) {
+            String eventoId = googleCalendarService.insertarEvento(reserva);
+            reserva.setEventid(eventoId);
+        }
+
+
         Reserva saved = reservaRepository.save(reserva);
 
         String mensaje = String.format(
@@ -67,6 +86,8 @@ public class MisReservasServiceImpl implements MisReservasService {
                 reserva.getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
         );
         notificacionService.crearYEnviarNotificacion(usuario, mensaje);
+
+
 
         return mapper.toDTO(saved);
     }
@@ -82,6 +103,17 @@ public class MisReservasServiceImpl implements MisReservasService {
 
         EstadoReserva estadoCancelado = estadoReservaRepository.findByDescripcionIgnoreCase("Cancelada")
                 .orElseThrow(() -> new IllegalStateException("Estado 'Cancelada' no configurado"));
+
+
+        // Si tiene evento de Google Calendar, lo eliminamos
+        if (reserva.getEventid() != null) {
+            try {
+                googleCalendarService.eliminarEvento(reserva.getEventid());
+                reserva.setEventid(null);
+            } catch (Exception e) {
+                 System.err.println("No se pudo eliminar el evento de Google Calendar: " + e.getMessage());
+            }
+        }
 
         reserva.setEstado(estadoCancelado);
         reservaRepository.save(reserva);
@@ -138,4 +170,55 @@ public class MisReservasServiceImpl implements MisReservasService {
         // Si no hay reservas solapadas, está disponible
         return reservasSolapadas.isEmpty();
     }
+
+    @Scheduled(cron = "0 */5 * * * *") // Cada 5 minutos
+    public void actualizarReservasVencidas() {
+        LocalDateTime ahora = LocalDateTime.now();
+
+        EstadoReserva estadoPendiente = estadoReservaRepository.findByDescripcionIgnoreCase("Pendiente")
+                .orElseThrow(() -> new IllegalStateException("Estado 'Pendiente' no encontrado"));
+
+        EstadoReserva estadoConfirmada = estadoReservaRepository.findByDescripcionIgnoreCase("Confirmada")
+                .orElseThrow(() -> new IllegalStateException("Estado 'Confirmada' no encontrado"));
+
+        EstadoReserva estadoNoUtilizada = estadoReservaRepository.findByDescripcionIgnoreCase("No Utilizada")
+                .orElseThrow(() -> new IllegalStateException("Estado 'Cancelada Aut.' no encontrado"));
+
+        EstadoReserva estadoCompletada = estadoReservaRepository.findByDescripcionIgnoreCase("Completada")
+                .orElseThrow(() -> new IllegalStateException("Estado 'Completada' no encontrado"));
+
+        // --- Pendientes vencidas
+        List<Reserva> pendientesVencidas = reservaRepository.findByEstadoAndFechaFinBefore(estadoPendiente, ahora);
+        for (Reserva reserva : pendientesVencidas) {
+            reserva.setEstado(estadoNoUtilizada);
+            reservaRepository.save(reserva);
+
+            Usuario usuario = reserva.getUsuario();
+            String mensaje = String.format(
+                    "Tu reserva #%s del espacio %s ha sido cancelada automáticamente por no haber sido confirmada.",
+                    reserva.getIdReserva(),
+                    reserva.getEspacio().getNombre()
+            );
+            notificacionService.crearYEnviarNotificacion(usuario, mensaje);
+        }
+
+        // --- Confirmadas vencidas
+        List<Reserva> confirmadasVencidas = reservaRepository.findByEstadoAndFechaFinBefore(estadoConfirmada, ahora);
+        for (Reserva reserva : confirmadasVencidas) {
+            reserva.setEstado(estadoCompletada);
+            reservaRepository.save(reserva);
+
+            Usuario usuario = reserva.getUsuario();
+            String mensaje = String.format(
+                    "Tu reserva #%s del espacio %s ha sido completada correctamente.",
+                    reserva.getIdReserva(),
+                    reserva.getEspacio().getNombre()
+            );
+            notificacionService.crearYEnviarNotificacion(usuario, mensaje);
+        }
+    }
+
+
+
+
 }
