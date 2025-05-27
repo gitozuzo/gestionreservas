@@ -6,7 +6,7 @@ import psycopg2
 import json
 
 # 1. Cargamos el modelo desde disco
-modelo = joblib.load("ml/modelo.pkl")
+modelo = joblib.load("modelo.pkl")
 
 # 2. Leemos argumentos
 # Uso: python predictor_postgres.py <usuario_id> <dia_semana> [hora]

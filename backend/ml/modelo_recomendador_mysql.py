@@ -49,7 +49,7 @@ modelo = RandomForestClassifier(n_estimators=100, random_state=42)
 modelo.fit(X, y)
 
 # 8. Guardamos el modelo
-joblib.dump(modelo, "ml/modelo.pkl")
+joblib.dump(modelo, "modelo.pkl")
 
 # 9. Marcamos las reservas como ya utilizadas
 ids_usados = df["id_reserva"].tolist()

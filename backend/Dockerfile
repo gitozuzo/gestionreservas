@@ -27,7 +27,6 @@ WORKDIR /app
 # Copiar artefactos desde la fase de build
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build /app/ml ml
-COPY --from=build /app/ml/modelo.pkl modelo.pkl
 
 # Exponer el puerto de la aplicación
 EXPOSE 8080
