@@ -1,42 +1,42 @@
 # Etapa de construcción
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar el código fuente
 COPY . .
 
-# Instalar Python y pip desde repos oficiales
+# Instalar Python, venv y pip
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
+    apt-get install -y python3 python3-pip python3-venv && \
+    python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r ml/requirements_postgresql.txt
 
-# Dar permisos al wrapper de Maven
-RUN chmod +x mvnw
+RUN chmod +x mvnw && \
+    ./mvnw clean install -DskipTests
 
-# Construir el proyecto Java (sin tests)
-RUN ./mvnw clean install -DskipTests
-
-# Etapa de ejecución (final)
+# Etapa de ejecución
 FROM eclipse-temurin:17-jdk
 
-# Instalar Python y pip desde repos oficiales
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip
-
-# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar artefactos Java y scripts Python
+# Instalar Python, venv y pip
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip python3-venv
+
+# Crear entorno virtual en imagen final
+RUN python3 -m venv /opt/venv
+
+# Copiar app y entorno virtual
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build /app/ml ml
+COPY --from=build /opt/venv /opt/venv
 
-# Instalar dependencias de Python
-RUN pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
+# Asegurar que se use el pip del entorno virtual
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Exponer el puerto
+# Exponer puerto
 EXPOSE 8080
 
-# Comando para ejecutar Spring Boot
+# Ejecutar Spring Boot
 CMD ["java", "-jar", "app.jar"]
