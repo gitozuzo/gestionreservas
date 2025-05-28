@@ -99,7 +99,7 @@ public class EspacioController {
             @PathVariable Long id,
             @RequestBody Map<String, Long> body
     ) {
-      
+
         Long idEstado = body.get("idEstado");
         espacioService.updateEstado(id, idEstado);
         return ResponseEntity.noContent().build();

@@ -127,8 +127,8 @@ public class RecomendadorServiceImpl implements RecomendadorService {
         return output.toString().trim();
     }
 
-    //@Scheduled(cron = "0 */2 * * * *") // cada 2 minutos pruebas
-    @Scheduled(cron = "0 0 2 * * *") // 2:00:00 todos los días
+    @Scheduled(cron = "0 */2 * * * *") // cada 2 minutos pruebas
+    //@Scheduled(cron = "0 0 2 * * *") // 2:00:00 todos los días
     public void reentrenarAutomáticamente() {
         try {
             System.out.println("[SCHEDULED] Entrenamiento automático iniciado");
