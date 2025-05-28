@@ -7,10 +7,10 @@ WORKDIR /app
 # Copiar el código fuente
 COPY . .
 
-# Instalar Python y pip desde repositorios oficiales
+# Instalar Python y pip desde repositorios oficiales + instalar dependencias Python
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
-    pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
+    pip3 install --break-system-packages --no-cache-dir -r ml/requirements_postgresql.txt
 
 # Dar permisos al wrapper de Maven
 RUN chmod +x mvnw
@@ -21,7 +21,7 @@ RUN ./mvnw clean install -DskipTests
 # Etapa de ejecución (imagen final)
 FROM eclipse-temurin:17-jdk
 
-# Instalar Python y pip desde repos oficiales (sin get-pip.py)
+# Instalar Python y pip desde repos oficiales
 RUN apt-get update && \
     apt-get install -y python3 python3-pip
 
@@ -32,8 +32,8 @@ WORKDIR /app
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build /app/ml ml
 
-# Instalar dependencias de Python en producción
-RUN pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
+# Instalar dependencias de Python en producción (usando --break-system-packages)
+RUN pip3 install --break-system-packages --no-cache-dir -r ml/requirements_postgresql.txt
 
 # Exponer puerto de la app
 EXPOSE 8080
