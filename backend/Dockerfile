@@ -35,6 +35,9 @@ COPY --from=build /app/ml ml
 # Activar el entorno virtual como PATH por defecto
 ENV PATH="/opt/venv/bin:$PATH"
 
+# 👉 Verificación de que pandas está instalado
+RUN /opt/venv/bin/python -c "import pandas; print('Pandas instalado, versión:', pandas.__version__)"
+
 # Exponer puerto
 EXPOSE 8080
 
