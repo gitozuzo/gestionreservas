@@ -5,12 +5,13 @@ import { throwError } from 'rxjs/internal/observable/throwError';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { tap } from 'rxjs/internal/operators/tap';
 import { environment } from '../../../environments/environment';
+import { AuthStore } from '../../core/auth/auth.store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/auth`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, public auth: AuthStore) {}
 
   login(email: string, password: string): Observable<{ token: string }> {
     return this.http
@@ -40,7 +41,6 @@ export class AuthService {
   }
 
   logout() {
-    // this.authStore.logout();
-    console.log('prueeba');
+    this.auth.logout();
   }
 }

@@ -98,6 +98,7 @@ public class EspacioController {
             @PathVariable Long id,
             @RequestBody Map<String, Long> body
     ) {
+        System.out.println("Accede al controlador de Espacios");
         Long idEstado = body.get("idEstado");
         espacioService.updateEstado(id, idEstado);
         return ResponseEntity.noContent().build();
