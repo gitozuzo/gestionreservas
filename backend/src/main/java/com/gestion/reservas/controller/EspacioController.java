@@ -93,12 +93,13 @@ public class EspacioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/estado")
+
+    @PostMapping("/{id}/actualizar-estado")
     public ResponseEntity<Void> actualizarEstado(
             @PathVariable Long id,
             @RequestBody Map<String, Long> body
     ) {
-        System.out.println("Accede al controlador de Espacios");
+      
         Long idEstado = body.get("idEstado");
         espacioService.updateEstado(id, idEstado);
         return ResponseEntity.noContent().build();

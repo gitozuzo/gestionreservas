@@ -27,7 +27,9 @@ export class EspacioService {
   }
 
   updateEspacioEstado(id: number, idEstado: number) {
-    return this.http.patch(`${this.apiUrl}/${id}/estado`, { idEstado });
+    return this.http.post(`${this.apiUrl}/${id}/actualizar-estado`, {
+      idEstado,
+    });
   }
 
   deleteEspacio(id: number): Observable<void> {

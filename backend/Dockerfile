@@ -7,18 +7,18 @@ WORKDIR /app
 # Copiar el código fuente
 COPY . .
 
-# Instalar Python y dependencias
+# Instalar Python y dependencias para compilar scripts si es necesario en esta etapa
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     pip3 install -r ml/requirements_postgresql.txt
 
-# Asignar permisos de ejecución al wrapper de Maven
+# Dar permisos al wrapper de Maven
 RUN chmod +x mvnw
 
-# Construir el proyecto Java
+# Construir el proyecto Java (sin tests)
 RUN ./mvnw clean install -DskipTests
 
-# Etapa de ejecución
+# Etapa de ejecución (final)
 FROM eclipse-temurin:17-jdk
 
 # Instalar Python en la imagen final
@@ -29,11 +29,14 @@ RUN apt-get update && \
 # Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar artefactos desde la fase de build
+# Copiar artefactos Java y scripts Python
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build /app/ml ml
 
-# Exponer el puerto de la aplicación
+# 🔧 Instalar dependencias Python necesarias en producción
+RUN pip3 install -r ml/requirements_postgresql.txt
+
+# Exponer el puerto de la app
 EXPOSE 8080
 
 # Comando para ejecutar Spring Boot
