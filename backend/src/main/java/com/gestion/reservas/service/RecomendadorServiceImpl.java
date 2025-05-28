@@ -22,10 +22,12 @@ public class RecomendadorServiceImpl implements RecomendadorService {
     @Override
     public RecomendacionResponseDTO obtenerRecomendaciones(Long usuarioId, int diaSemana, int hora) throws Exception {
         String scriptPath = env.getProperty("python.script.predictor");
+        String pythonExecutable = env.getProperty("python.executable", "python");
+
         System.out.println("Working dir: " + System.getProperty("user.dir"));
 
         ProcessBuilder pb = new ProcessBuilder(
-                "python", scriptPath,
+                pythonExecutable, scriptPath,
                 String.valueOf(usuarioId),
                 String.valueOf(diaSemana),
                 String.valueOf(hora)
@@ -82,10 +84,12 @@ public class RecomendadorServiceImpl implements RecomendadorService {
     @Override
     public String entrenarModelo() throws Exception {
         String scriptPath = env.getProperty("python.script.modelo");
+        String pythonExecutable = env.getProperty("python.executable", "python");
+
         System.out.println("Working dir: " + System.getProperty("user.dir"));
 
         // Creamos el proceso
-        ProcessBuilder pb = new ProcessBuilder("python", scriptPath);
+        ProcessBuilder pb = new ProcessBuilder(pythonExecutable, scriptPath);
         pb.directory(new File(System.getProperty("user.dir")));
 
         Map<String, String> envs = pb.environment();
