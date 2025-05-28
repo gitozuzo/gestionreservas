@@ -21,6 +21,11 @@ RUN ./mvnw clean install -DskipTests
 # Etapa de ejecución
 FROM eclipse-temurin:17-jdk
 
+# Instalar Python en la imagen final
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    ln -s /usr/bin/python3 /usr/bin/python
+
 # Crear directorio de trabajo
 WORKDIR /app
 
@@ -33,3 +38,4 @@ EXPOSE 8080
 
 # Comando para ejecutar Spring Boot
 CMD ["java", "-jar", "app.jar"]
+
