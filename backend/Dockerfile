@@ -7,10 +7,10 @@ WORKDIR /app
 # Copiar el código fuente
 COPY . .
 
-# Instalar Python y pip desde repositorios oficiales + instalar dependencias Python
+# Instalar Python y pip desde repos oficiales
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
-    pip3 install --break-system-packages --no-cache-dir -r ml/requirements_postgresql.txt
+    pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
 
 # Dar permisos al wrapper de Maven
 RUN chmod +x mvnw
@@ -18,7 +18,7 @@ RUN chmod +x mvnw
 # Construir el proyecto Java (sin tests)
 RUN ./mvnw clean install -DskipTests
 
-# Etapa de ejecución (imagen final)
+# Etapa de ejecución (final)
 FROM eclipse-temurin:17-jdk
 
 # Instalar Python y pip desde repos oficiales
@@ -28,15 +28,15 @@ RUN apt-get update && \
 # Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar artefactos y scripts
+# Copiar artefactos Java y scripts Python
 COPY --from=build /app/target/reservas-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build /app/ml ml
 
-# Instalar dependencias de Python en producción (usando --break-system-packages)
-RUN pip3 install --break-system-packages --no-cache-dir -r ml/requirements_postgresql.txt
+# Instalar dependencias de Python
+RUN pip3 install --no-cache-dir -r ml/requirements_postgresql.txt
 
-# Exponer puerto de la app
+# Exponer el puerto
 EXPOSE 8080
 
-# Comando de ejecución
+# Comando para ejecutar Spring Boot
 CMD ["java", "-jar", "app.jar"]
