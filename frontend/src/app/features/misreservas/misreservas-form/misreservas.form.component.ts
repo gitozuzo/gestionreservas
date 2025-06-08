@@ -306,25 +306,28 @@ export class MisReservasFormComponent implements OnInit {
             if (popup?.closed) {
               clearInterval(espera);
               this.googleAuthService.checkTokenStatus().subscribe((valido) => {
-                if (valido) procesar();
-                else
-                  this.toastr.error(
+                if (valido) {
+                  procesar();
+                } else {
+                  this.toastr.warning(
                     `
                     <div class="toast-content">
                       <div class="toast-title">Autenticación Google Calendar</div>
                       <div class="toast-message">
-                         No se pudo autenticar con Google.
+                        No se pudo autenticar con Google. La reserva se ha guardado sin sincronización.
                       </div>
                     </div>
                   `,
                     '',
                     {
                       enableHtml: true,
-                      toastClass: 'ngx-toastr custom-toast toast-info',
+                      toastClass: 'ngx-toastr custom-toast toast-warning',
                       closeButton: true,
-                      timeOut: 3000,
+                      timeOut: 4000,
                     }
                   );
+                  procesar(); // continuar incluso si no hay autenticación
+                }
               });
             }
           }, 1000);

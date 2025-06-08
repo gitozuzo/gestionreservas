@@ -42,4 +42,5 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>, Reserva
 
     List<Reserva> findByUsuarioIdUsuario(Long idUsuario);
 
+    List<Reserva> findByEstadoAndFechaInicioBetween(EstadoReserva estado, LocalDateTime desde, LocalDateTime hasta);
 }

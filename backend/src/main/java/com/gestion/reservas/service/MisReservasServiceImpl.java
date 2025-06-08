@@ -219,6 +219,37 @@ public class MisReservasServiceImpl implements MisReservasService {
     }
 
 
+    @Scheduled(cron = "0 */5 * * * *") // Cada 5 minutos
+    public void notificarReservasPendientesProximas() {
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime desde = ahora.plusDays(1).minusMinutes(1);
+        LocalDateTime hasta = ahora.plusDays(1).plusMinutes(1);
+
+        Optional<EstadoReserva> estadoPendienteOpt = estadoReservaRepository.findByDescripcionIgnoreCase("Pendiente");
+
+        if (estadoPendienteOpt.isEmpty()) {
+            System.out.println("Estado 'Pendiente' no encontrado. Se omite la notificación de reservas próximas.");
+            return; // Finaliza sin error
+        }
+
+        EstadoReserva estadoPendiente = estadoPendienteOpt.get();
+
+        List<Reserva> reservasProximas = reservaRepository.findByEstadoAndFechaInicioBetween(
+                estadoPendiente, desde, hasta
+        );
+
+        for (Reserva reserva : reservasProximas) {
+            Usuario usuario = reserva.getUsuario();
+            String mensaje = String.format(
+                    "Recuerda que tu reserva #%s del espacio %s comienza en 24 horas. ¡No olvides confirmarla!",
+                    reserva.getIdReserva(),
+                    reserva.getEspacio().getNombre()
+            );
+            notificacionService.crearYEnviarNotificacion(usuario, mensaje);
+        }
+    }
+
+
 
 
 }
